@@ -13,15 +13,15 @@ export function draw(canvas){
 
 	//scope binding
 	// ------------------------------
-	const drawPlayer        = player.bind(true, context, playerSize);
-	const drawGoal          = goal.bind(true, context, playerSize);
-	const drawGuide         = guide.bind(true, context);
+	const drawPlayer = player.bind(true, context, playerSize);
+	const drawGoal   = goal.bind(true, context, playerSize);
+	const drawGuide  = guide.bind(true, context);
 
 
 	// positioning
 	// ------------------------------
-	const xCenter       = width / 2;
-	const yCenter       = height / 2;
+	const xCenter = width / 2;
+	const yCenter = height / 2;
 
 
 	// draw guides
