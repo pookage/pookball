@@ -1,15 +1,18 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import Hello from "COMPONENTS/Hello/";
+import App from "COMPONENTS/App/";
 import "SHARED/reset.scss";
 import "SHARED/global.scss";
 
 window.addEventListener("DOMContentLoaded", init);
 
 function init(){
+
+	const canvas = document.getElementById("canvas");
+
 	ReactDOM.render(
-		<Hello />,
+		<App canvas={ canvas }/>,
 		document.getElementById("app")
 	);
 }
