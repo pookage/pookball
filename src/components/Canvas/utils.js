@@ -16,18 +16,21 @@ export function draw(canvas){
 
 	// draw guides
 	// -------------------------------
+	const drawGuide = guide.bind(true, context);
+
 	// vertical
-	context.strokeStyle = "red";
-	context.beginPath();
-	context.moveTo(xCenter, 0);
-	context.lineTo(xCenter, height);
-	context.stroke();
+	drawGuide({
+		start: [ xCenter, 0 ], 
+		end: [ xCenter, height ], 
+		color: "red"
+	});
+	
 	// horizontal
-	context.strokeStyle = "blue";
-	context.beginPath();
-	context.moveTo(0, yCenter);
-	context.lineTo(width, yCenter);
-	context.stroke();
+	drawGuide({
+		start: [ 0, yCenter ],
+		end: [ width, yCenter ],
+		color: "blue"
+	});
 
 
 	// draw players
@@ -74,3 +77,14 @@ function player(context, size, { x, y }){
 	context.fill();
 } // player
 
+function guide(context, { start, end, color }){
+
+	const [ startX, startY ] = start;
+	const [ endX, endY ]     = end;
+
+	context.strokeStyle = color;
+	context.beginPath();
+	context.moveTo(startX, startY);
+	context.lineTo(endX, endY);
+	context.stroke();
+}// drawGuide
