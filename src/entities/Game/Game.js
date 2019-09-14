@@ -1,4 +1,5 @@
 import Guide from "ENTITIES/Guide/";
+import Goal from "ENTITIES/Goal/";
 
 export default class Game {
 
@@ -61,9 +62,15 @@ export default class Game {
 			length: this.#WIDTH
 		});
 
+		const goal = new Goal({
+			playerSize: this.#PLAYER_SIZE,
+			position: { x: this.#CENTER_X }
+		});
+
 		return ([
 			centerYGuide,
-			centerXGuide
+			centerXGuide,
+			goal
 		]);
 	}// initEntities
 
@@ -135,6 +142,8 @@ export default class Game {
 		draw every entity in the game to the canvas
 		*/
 	render(){
+
+		this.#CONTEXT.clearRect(0, 0, this.#WIDTH, this.#HEIGHT);
 
 		// render every entity in the game scene
 		for(let entity of this.#ENTITIES){
