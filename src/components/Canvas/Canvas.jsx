@@ -43,7 +43,10 @@ export default function Canvas(props){
 	}// updateSize
 
 
-	UTILS.draw(element);
+	// RENDER
+	// ----------------------
+	const context = element.getContext("2d");
+	UTILS.draw(context, size);
 
 	return null;
 } // Canvas

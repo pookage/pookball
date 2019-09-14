@@ -1,15 +1,11 @@
 // config
 const playerScale = 0.05;
 
-export function draw(canvas){
-
-	const context = canvas.getContext("2d");
+export function draw(context, { width, height }){
 	
 	// dimensions
 	// ------------------------------
-	const { width, height } = canvas;
 	const playerSize        = height * playerScale;
-
 
 	//scope binding
 	// ------------------------------
@@ -17,12 +13,10 @@ export function draw(canvas){
 	const drawGoal   = goal.bind(true, context, playerSize);
 	const drawGuide  = guide.bind(true, context);
 
-
 	// positioning
 	// ------------------------------
 	const xCenter = width / 2;
 	const yCenter = height / 2;
-
 
 	// draw guides
 	// -------------------------------
@@ -39,11 +33,9 @@ export function draw(canvas){
 		color: "blue"
 	});
 
-
 	// draw goal
 	// ---------------------------
 	drawGoal({ x: xCenter, y: 0 });
-
 
 	// draw players
 	// ----------------------------
