@@ -1,5 +1,3 @@
-import s from "./styles.scss";
-import * as UTILS from "./utils.js";
+import "./styles.scss";
 
 export { default } from "./Canvas.jsx";
-export { UTILS, s };

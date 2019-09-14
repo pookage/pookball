@@ -1,5 +1,6 @@
 import Guide from "ENTITIES/Guide/";
 import Goal from "ENTITIES/Goal/";
+import Player from "ENTITIES/Player/";
 
 export default class Game {
 
@@ -7,7 +8,7 @@ export default class Game {
 	#CONTEXT          = null;
 	#WIDTH            = 1000;
 	#HEIGHT           = 1000;
-	#PLAYER_SCALE     = 0.05;
+	#PLAYER_SCALE     = 0.1;
 	#PLAYER_SIZE      = 50;
 	#CENTER_X         = 500;
 	#CENTER_Y         = 500;
@@ -67,10 +68,19 @@ export default class Game {
 			position: { x: this.#CENTER_X }
 		});
 
+		const player = new Player({
+			size: this.#PLAYER_SIZE,
+			position: {
+				x: this.#CENTER_X,
+				y: this.#CENTER_Y
+			}
+		});
+
 		return ([
 			centerYGuide,
 			centerXGuide,
-			goal
+			goal,
+			player
 		]);
 	}// initEntities
 

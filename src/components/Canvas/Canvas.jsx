@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { UTILS } from "./";
 
 export default function Canvas(props){
 
@@ -19,7 +18,7 @@ export default function Canvas(props){
 	});
 	useEffect(init, []);
 	useEffect(updateListeners);
-	useEffect(syncCanvasDimensions, [ size ]);
+	useEffect(syncGameDimensions, [ size ]);
 
 
 	// EFFECTS
@@ -31,9 +30,9 @@ export default function Canvas(props){
 		window.addEventListener("resize", updateSize);
 		return () => { window.removeEventListener("resize", updateSize); }
 	}// updateListeners
-	function syncCanvasDimensions(){
+	function syncGameDimensions(){
 		game.updateSize(size);
-	}// syncCanvasDimensions
+	}// syncGameDimensions
 
 
 	// EVENT LISTENERS
