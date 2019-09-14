@@ -94,7 +94,11 @@ function buildConfig(env, args){
 						options: {
 							presets: [
 								"@babel/preset-env",
-								"@babel/preset-react"
+								"@babel/preset-react",
+							],
+							plugins: [
+								"@babel/plugin-proposal-class-properties",
+								"@babel/plugin-proposal-private-methods"
 							]
 						}
 					},
@@ -132,6 +136,7 @@ function buildConfig(env, args){
 		resolve: {
 			alias: {
 				COMPONENTS: `${src}/components`,
+				ENTITIES: `${src}/entities`,
 				SHARED: `${src}/shared`
 			}
 		},

@@ -5,9 +5,13 @@ export default function Canvas(props){
 
 	// PROPS
 	// ------------------------
-	const { element } = props;
+	const { 
+		element,
+		game
+	} = props;
 
 	// HOOKS
+
 	// ------------------------
 	const [ size, setSize ] = useState({ 
 		width:  window.innerWidth, 
@@ -15,6 +19,7 @@ export default function Canvas(props){
 	});
 	useEffect(init, []);
 	useEffect(updateListeners);
+	useEffect(syncCanvasDimensions, [ size ]);
 
 
 	// EFFECTS
@@ -26,6 +31,9 @@ export default function Canvas(props){
 		window.addEventListener("resize", updateSize);
 		return () => { window.removeEventListener("resize", updateSize); }
 	}// updateListeners
+	function syncCanvasDimensions(){
+		game.updateSize(size);
+	}// syncCanvasDimensions
 
 
 	// EVENT LISTENERS
@@ -41,12 +49,6 @@ export default function Canvas(props){
 
 		setSize({ width, height });
 	}// updateSize
-
-
-	// RENDER
-	// ----------------------
-	const context = element.getContext("2d");
-	UTILS.draw(context, size);
 
 	return null;
 } // Canvas
