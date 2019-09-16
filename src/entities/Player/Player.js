@@ -106,15 +106,6 @@ export default class Player {
 		const { x, y } = position;
 		this.#CURSOR_X = x;
 		this.#CURSOR_Y = y;
-
-		// console.log({ x, y });
-
-		// console.log("cursor update?")
-		for(let child of this.#CHILDREN){
-			if(child.updateCursorPosition){
-				child.updateCursorPosition(position);
-			}
-		}
 	} // updateCursorPosition
 
 	calculateRotation({ x = 0, y = 0 }){
