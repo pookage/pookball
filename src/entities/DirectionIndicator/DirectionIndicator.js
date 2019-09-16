@@ -6,6 +6,8 @@ export default class DirectionIndicator {
 	#HEIGHT;
 	#OFFSET;
 	#THICKNESS = 10;
+	#CURSOR_X = 1;
+	#CURSOR_Y = 1;
 
 	constructor(config){
 		const {
@@ -27,9 +29,11 @@ export default class DirectionIndicator {
 
 		this.render = this.render.bind(this);
 		this.scale  = this.scale.bind(this);
+		this.updateCursorPosition = this.updateCursorPosition.bind(this);
 	}// constructor
 
 	render(context){
+
 		// direction indicator
 		context.strokeStyle = "black";
 		context.lineWidth   = this.#THICKNESS;
@@ -69,5 +73,11 @@ export default class DirectionIndicator {
 		this.#OFFSET    = scalars.offset * nextWidth;
 		this.#THICKNESS = scalars.thickness * nextWidth;
 	}// scale
+
+	updateCursorPosition(position){
+		const { x, y } = position;
+		this.#CURSOR_X = x;
+		this.#CURSOR_Y = y;
+	} // updateCursorPosition
 
 }

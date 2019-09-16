@@ -7,6 +7,8 @@ export default class Player {
 	#Y;
 	#DEGREES_360 = Math.PI * 2;
 	#CHILDREN = [];
+	#CURSOR_X;
+	#CURSOR_Y;
 
 	constructor(config){
 
@@ -22,6 +24,8 @@ export default class Player {
 		this.render = this.render.bind(this);
 		this.scale  = this.scale.bind(this);
 		this.initChildEntities = this.initChildEntities.bind(this);
+		this.updateCursorPosition = this.updateCursorPosition.bind(this);
+		this.rotate = this.rotate.bind(this);
 
 		this.#X      = x;
 		this.#Y      = y;
@@ -44,8 +48,16 @@ export default class Player {
 	}// initChildEntities
 
 	render(context){
+
+		// console.log(this.calculateRotation, this.#CURSOR_X)
+		const rotation = this.calculateRotation({
+			x: this.#CURSOR_X,
+			y: this.#CURSOR_Y
+		});
+
 		context.fillStyle = "black";
 
+		this.rotate(context, 10);
 		context.beginPath();
 		context.moveTo(this.#X, this.#Y);
 		context.arc(
@@ -55,10 +67,13 @@ export default class Player {
 			this.#DEGREES_360
 		);
 		context.fill();
+		
 
 		for(let child of this.#CHILDREN){
 			child.render(context);
 		}
+
+		this.rotate(context, -10);
 	}// render
 
 	scale(prev, next){
@@ -80,8 +95,38 @@ export default class Player {
 		}
 	}// scale
 
-	updateCursorPosition({ x, y}){
-		console.log({ x, y });
+	rotate(context, radians){
+		context.translate((this.#X), (this.#Y))
+		context.rotate(radians);
+		context.translate(-(this.#X), -(this.#Y))
+	}// rotate
+
+	updateCursorPosition(position){
+		const { x, y } = position;
+		this.#CURSOR_X = x;
+		this.#CURSOR_Y = y;
+
+		// console.log({ x, y });
+
+		// console.log("cursor update?")
+		for(let child of this.#CHILDREN){
+			if(child.updateCursorPosition){
+				child.updateCursorPosition(position);
+			}
+		}
 	} // updateCursorPosition
+
+	calculateRotation({ x = 0, y = 0 }){
+
+		const dx = x - (1278);
+		const dy = y - (1331);
+		const angle = Math.atan2(dy, dx);
+
+		return angle;
+
+		console.log(dx)
+
+		// console.log(angle);
+	}// calculateRotation
 
 }// Player

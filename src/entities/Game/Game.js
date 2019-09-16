@@ -13,7 +13,7 @@ export default class Game {
 	#CENTER_X         = 500;
 	#CENTER_Y         = 500;
 	#ENTITIES         = [];
-	#THROTTLE         = 5000;
+	#THROTTLE         = 1000;
 	#THROTTLE_TIMEOUT = null;
 	#NEXT_FRAME       = null;
 	#CURSOR_X;
