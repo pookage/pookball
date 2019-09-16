@@ -26,6 +26,7 @@ export default class Player {
 		this.initChildEntities = this.initChildEntities.bind(this);
 		this.updateCursorPosition = this.updateCursorPosition.bind(this);
 		this.rotate = this.rotate.bind(this);
+		this.calculateRotation = this.calculateRotation.bind(this);
 
 		this.#X      = x;
 		this.#Y      = y;
@@ -57,7 +58,7 @@ export default class Player {
 
 		context.fillStyle = "black";
 
-		this.rotate(context, 10);
+		this.rotate(context, rotation);
 		context.beginPath();
 		context.moveTo(this.#X, this.#Y);
 		context.arc(
@@ -73,7 +74,7 @@ export default class Player {
 			child.render(context);
 		}
 
-		this.rotate(context, -10);
+		this.rotate(context, -rotation);
 	}// render
 
 	scale(prev, next){
@@ -117,16 +118,11 @@ export default class Player {
 	} // updateCursorPosition
 
 	calculateRotation({ x = 0, y = 0 }){
-
-		const dx = x - (1278);
-		const dy = y - (1331);
-		const angle = Math.atan2(dy, dx);
+		const dx    = x - this.#X;
+		const dy    = y - this.#Y;
+		const angle = Math.atan2(dx, -dy);
 
 		return angle;
-
-		console.log(dx)
-
-		// console.log(angle);
 	}// calculateRotation
 
 }// Player

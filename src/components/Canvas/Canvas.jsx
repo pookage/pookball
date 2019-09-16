@@ -54,7 +54,7 @@ export default function Canvas(props){
 		setSize({ width, height });
 	}// updateSize
 	function updateCursorPosition(event){
-		debounce(updateGameCursor.bind(true, event), 10);
+		debounce(updateGameCursor.bind(true, event), 60);
 	}// updateCursorPosition
 	function updateGameCursor(event){
 		const { clientX, clientY } = event;

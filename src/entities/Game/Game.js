@@ -13,7 +13,7 @@ export default class Game {
 	#CENTER_X         = 500;
 	#CENTER_Y         = 500;
 	#ENTITIES         = [];
-	#THROTTLE         = 1000;
+	#THROTTLE         = 0;
 	#THROTTLE_TIMEOUT = null;
 	#NEXT_FRAME       = null;
 	#CURSOR_X;
@@ -74,8 +74,8 @@ export default class Game {
 		const player = new Player({
 			size: this.#PLAYER_SIZE,
 			position: {
-				x: this.#CENTER_X,
-				y: this.#CENTER_Y
+				x: this.#CENTER_X + 10,
+				y: this.#CENTER_Y + 10
 			}
 		});
 
