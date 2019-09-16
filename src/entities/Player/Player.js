@@ -80,4 +80,8 @@ export default class Player {
 		}
 	}// scale
 
+	updateCursorPosition({ x, y}){
+		console.log({ x, y });
+	} // updateCursorPosition
+
 }// Player

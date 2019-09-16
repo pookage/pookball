@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { debounce } from "SHARED/utils.js";
 
 export default function Canvas(props){
 
@@ -28,7 +29,11 @@ export default function Canvas(props){
 	}// init
 	function updateListeners(){
 		window.addEventListener("resize", updateSize);
-		return () => { window.removeEventListener("resize", updateSize); }
+		element.addEventListener("mousemove", updateCursorPosition);
+		return () => { 
+			window.removeEventListener("resize", updateSize);
+			element.removeEventListener("mousemove", updateCursorPosition);
+		}
 	}// updateListeners
 	function syncGameDimensions(){
 		game.updateSize(size);
@@ -48,6 +53,13 @@ export default function Canvas(props){
 
 		setSize({ width, height });
 	}// updateSize
+	function updateCursorPosition(event){
+		debounce(updateGameCursor.bind(true, event), 10);
+	}// updateCursorPosition
+	function updateGameCursor(event){
+		const { clientX, clientY } = event;
+		game.updateCursorPosition({ x: clientX, y: clientY });
+	}// updateGameCursor
 
 	return null;
 } // Canvas

@@ -16,6 +16,8 @@ export default class Game {
 	#THROTTLE         = 5000;
 	#THROTTLE_TIMEOUT = null;
 	#NEXT_FRAME       = null;
+	#CURSOR_X;
+	#CURSOR_Y;
 
 	constructor(config){
 		const {
@@ -29,6 +31,7 @@ export default class Game {
 		this.render           = this.render.bind(this);
 		this.requestRender    = this.requestRender.bind(this);
 		this.clearRenderQueue = this.clearRenderQueue.bind(this);
+		this.updateCursorPosition = this.updateCursorPosition.bind(this);
 
 		// apply config
 		this.#CANVAS  = canvas;
@@ -113,6 +116,23 @@ export default class Game {
 
 		this.requestRender();
 	}// updateSize
+
+	/* UPDATE CURSOR POSITION
+	-----------------------------
+		Update game state with cursor position
+		*/
+	updateCursorPosition(position){
+		const { x, y } = position;
+		this.#CURSOR_X = x;
+		this.#CURSOR_Y = y;
+
+		for(let child of this.#ENTITIES){
+			if(child.updateCursorPosition){
+				child.updateCursorPosition(position);
+			}
+		}
+	}// updateCursorPosition
+
 
 
 	/* SCALE
