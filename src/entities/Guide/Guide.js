@@ -79,6 +79,7 @@ export default class Guide {
 		}
 
 		context.strokeStyle = this.#COLOR;
+		context.lineWidth   = 1;
 		context.beginPath();
 		context.moveTo(startX, startY);
 		context.lineTo(endX, endY);

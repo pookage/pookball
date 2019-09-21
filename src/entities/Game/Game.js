@@ -13,9 +13,11 @@ export default class Game {
 	#CENTER_X         = 500;
 	#CENTER_Y         = 500;
 	#ENTITIES         = [];
-	#THROTTLE         = 5000;
+	#THROTTLE         = 0;
 	#THROTTLE_TIMEOUT = null;
 	#NEXT_FRAME       = null;
+	#CURSOR_X;
+	#CURSOR_Y;
 
 	constructor(config){
 		const {
@@ -29,6 +31,7 @@ export default class Game {
 		this.render           = this.render.bind(this);
 		this.requestRender    = this.requestRender.bind(this);
 		this.clearRenderQueue = this.clearRenderQueue.bind(this);
+		this.updateCursorPosition = this.updateCursorPosition.bind(this);
 
 		// apply config
 		this.#CANVAS  = canvas;
@@ -71,8 +74,8 @@ export default class Game {
 		const player = new Player({
 			size: this.#PLAYER_SIZE,
 			position: {
-				x: this.#CENTER_X,
-				y: this.#CENTER_Y
+				x: this.#CENTER_X + 10,
+				y: this.#CENTER_Y + 10
 			}
 		});
 
@@ -113,6 +116,23 @@ export default class Game {
 
 		this.requestRender();
 	}// updateSize
+
+	/* UPDATE CURSOR POSITION
+	-----------------------------
+		Update game state with cursor position
+		*/
+	updateCursorPosition(position){
+		const { x, y } = position;
+		this.#CURSOR_X = x;
+		this.#CURSOR_Y = y;
+
+		for(let child of this.#ENTITIES){
+			if(child.updateCursorPosition){
+				child.updateCursorPosition(position);
+			}
+		}
+	}// updateCursorPosition
+
 
 
 	/* SCALE
