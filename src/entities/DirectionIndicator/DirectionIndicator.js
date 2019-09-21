@@ -18,8 +18,6 @@ export default class DirectionIndicator {
 			size,
 		} = config;
 
-		console.log(size)
-
 		this.#GAME      = game;
 		this.#X         = x;
 		this.#Y         = y;

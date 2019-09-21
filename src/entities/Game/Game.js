@@ -10,7 +10,7 @@ export default class Game {
 	#CONTEXT          = null; // refernece to the canvas' API
 
 	// DEBUG CONTROLS
-	#THROTTLE         = 1000; // (ms) minimum time between frames
+	#THROTTLE         = 0; // (ms) minimum time between frames
 	
 	// PITCH DIMENSIONS
 	// ---------------------------
@@ -22,8 +22,8 @@ export default class Game {
 	#throttle_timeout = null; // reference to the setTimeout that is throttling the render
 	#next_frame       = null; // refernece to the next requestAnimationFrame
 	#ENTITIES         = [];   // nested tree of every entity in the game
-	#cursor_x;      // last known x position of the cursor
-	#cursor_y;      // last known y position of the cursor
+	CURSOR_X;      // last known x position of the cursor
+	CURSOR_Y;      // last known y position of the cursor
 	UNIT;           // the number of pixels per meter
 	#width;         // pixel width of canvas
 	#height;        // pixel height of canvas
@@ -40,6 +40,7 @@ export default class Game {
 		this.initEntities  = this.initEntities.bind(this);
 		this.render        = this.render.bind(this);
 		this.requestRender = this.requestRender.bind(this);
+		this.updateCursorPosition = this.updateCursorPosition.bind(this);
 
 
 		// setup
@@ -64,6 +65,8 @@ export default class Game {
 		const canvas  = document.createElement("canvas");
 		canvas.width  = this.#width  = this.#WIDTH * this.UNIT;
 		canvas.height = this.#height = this.#HEIGHT * this.UNIT;
+
+		canvas.addEventListener("mousemove", this.updateCursorPosition);
 
 		return canvas;
 	}// createCanvas
@@ -121,73 +124,16 @@ export default class Game {
 	}// initEntities
 
 
-	/* UPDATE SIZE
-	-----------------------------
-		update everything that needs to know how big the canvas
-		is - including child entities
-		*/
-	// updateSize({ width, height }){
-
-	// 	// don't render anything whilst we're resizing
-	// 	this.clearRenderQueue();
-
-	// 	//scale positions based on the new canvas size
-	// 	this.scale({
-	// 		width: this.#WIDTH,
-	// 		height: this.#HEIGHT
-	// 	}, {
-	// 		width,
-	// 		height
-	// 	});
-
-	// 	// update 
-	// 	this.#WIDTH       = width;
-	// 	this.#HEIGHT      = height;
-	// 	this.#PLAYER_SIZE = height * this.#PLAYER_SCALE;
-	// 	this.#CENTER_X    = width / 2;
-	// 	this.#CENTER_Y    = height / 2;
-
-	// 	this.requestRender();
-	// }// updateSize
-
 	/* UPDATE CURSOR POSITION
 	-----------------------------
 		Update game state with cursor position
 		*/
-	// updateCursorPosition(position){
-	// 	const { x, y } = position;
-	// 	this.#CURSOR_X = x;
-	// 	this.#CURSOR_Y = y;
+	updateCursorPosition(event){
+		const { clientX: x, clientY: y } = event;
 
-	// 	for(let child of this.#ENTITIES){
-	// 		if(child.updateCursorPosition){
-	// 			child.updateCursorPosition(position);
-	// 		}
-	// 	}
-	// }// updateCursorPosition
-
-
-
-	/* SCALE
-	---------------------------
-		whenever the canvas size updates, scale the size and
-		position of all entities in the scene
-		*/
-	// scale(prevSize, nextSize){
-	// 	for(let entity of this.#ENTITIES){
-	// 		entity.scale(prevSize, nextSize);
-	// 	}
-	// }// scale
-
-
-	/* CLEAR RENDER QUEUE
-	---------------------------
-		stop any renders that have already been requested 
-		*/
-	// clearRenderQueue(){
-	// 	clearTimeout(this.#THROTTLE_TIMEOUT);
-	// 	cancelAnimationFrame(this.#NEXT_FRAME);
-	// }// clearRenderQueue
+		this.CURSOR_X = x;
+		this.CURSOR_Y = y;
+	}// updateCursorPosition
 
 
 	/* REQUEST RENDER
@@ -206,7 +152,7 @@ export default class Game {
 		*/
 	render(){
 		const widthPx  = this.#WIDTH * this.UNIT;
-		const heightPx = this.#HEIGHT * this.width;
+		const heightPx = this.#HEIGHT * this.UNIT;
 		this.#CONTEXT.clearRect(
 			0, 0, 
 			widthPx, heightPx

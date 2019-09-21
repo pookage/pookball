@@ -26,11 +26,9 @@ export default class Player {
 		// scope binding
 		// -----------------------
 		this.render = this.render.bind(this);
-		// this.scale  = this.scale.bind(this);
-		// this.rotate = this.rotate.bind(this);
+		this.rotate = this.rotate.bind(this);
 		this.initChildren = this.initChildren.bind(this);
-		// this.updateCursorPosition = this.updateCursorPosition.bind(this);
-		// this.calculateRotationFromCursor = this.calculateRotationFromCursor.bind(this);
+		this.calculateRotationFromCursor = this.calculateRotationFromCursor.bind(this);
 
 		// setup
 		// ------------------------
@@ -62,15 +60,14 @@ export default class Player {
 		const y = this.#Y * this.#GAME.UNIT;
 		const radius = this.#RADIUS * this.#GAME.UNIT;
 
-		// console.log(this.calculateRotation, this.#CURSOR_X)
-		// const rotation = this.calculateRotationFromCursor({
-		// 	x: this.#CURSOR_X,
-		// 	y: this.#CURSOR_Y
-		// });
+		const rotation = this.calculateRotationFromCursor({
+			x: this.#GAME.CURSOR_X,
+			y: this.#GAME.CURSOR_Y
+		});
 
 		context.fillStyle = "black";
 
-		// this.rotate(context, rotation);
+		this.rotate(context, rotation);
 		context.beginPath();
 		context.moveTo(x, y);
 		context.arc(
@@ -85,35 +82,35 @@ export default class Player {
 			child.render(context);
 		}
 
-		// this.rotate(context, -rotation);
+		this.rotate(context, -rotation);
 	}// render
 
-	// rotate(context, radians){
-	// 	const { x, y } = this;
-	// 	context.translate(x, y)
-	// 	context.rotate(radians);
-	// 	context.translate(-x, -y)
-	// }// rotate
+	rotate(context, radians){
+		const x = this.#X * this.#GAME.UNIT;
+		const y = this.#Y * this.#GAME.UNIT;
 
-	// updateCursorPosition(position){
-	// 	const { x, y } = position;
-	// 	this.#CURSOR_X = x;
-	// 	this.#CURSOR_Y = y;
-	// } // updateCursorPosition
+		context.translate(x, y)
+		context.rotate(radians);
+		context.translate(-x, -y)
+	}// rotate
 
-	// calculateRotationFromCursor(cursor){
-	// 	const { 
-	// 		x: cursor_x = 0, 
-	// 		y: cursor_y = 0 
-	// 	} = cursor;
 
-	// 	const { x, y } = this;
+	calculateRotationFromCursor(cursor){
+		const { 
+			x: cursor_x = 0, 
+			y: cursor_y = 0 
+		} = cursor;
 
-	// 	const dx    = cursor_x - x;
-	// 	const dy    = cursor_y - y;
-	// 	const angle = Math.atan2(dx, -dy);
+		const x = this.#X * this.#GAME.UNIT;
+		const y = this.#Y * this.#GAME.UNIT;
 
-	// 	return angle;
-	// }// calculateRotationFromCursor
+		console.log(x, cursor_x, y, cursor_y);
+
+		const dx    = cursor_x - x;
+		const dy    = cursor_y - y;
+		const angle = Math.atan2(dx, -dy);
+
+		return angle;
+	}// calculateRotationFromCursor
 
 }// Player
