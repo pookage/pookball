@@ -22,13 +22,14 @@ export default class Player extends Entity {
 
 		// scope binding
 		this.scale  = this.scale.bind(this);
-		this.updateCursorPosition = this.updateCursorPosition.bind(this);
 		this.rotate = this.rotate.bind(this);
 		this.initChildren = this.initChildren.bind(this);
+		this.updateCursorPosition = this.updateCursorPosition.bind(this);
 		this.calculateRotationFromCursor = this.calculateRotationFromCursor.bind(this);
+
+		//init 
 		this.RADIUS = size / 2;
 		this.CHILDREN = this.initChildren();
-		console.log(this)
 	}// constructor
 	
 	initChildren(){
@@ -50,8 +51,6 @@ export default class Player extends Entity {
 			x, y,
 			RADIUS,
 		} = this;
-
-
 
 		// console.log(this.calculateRotation, this.#CURSOR_X)
 		const rotation = this.calculateRotationFromCursor({

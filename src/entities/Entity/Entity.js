@@ -1,7 +1,7 @@
 export default class Entity {
 	x;
 	y;
-	CHILDREN;
+	CHILDREN = [];
 
 	constructor(config){
 

@@ -4,46 +4,78 @@ import Player from "ENTITIES/Player/";
 
 export default class Game {
 
-	#CANVAS           = null;
-	#CONTEXT          = null;
-	#WIDTH            = 1000;
-	#HEIGHT           = 1000;
-	#PLAYER_SCALE     = 0.1;
-	#PLAYER_SIZE      = 50;
-	#CENTER_X         = 500;
-	#CENTER_Y         = 500;
-	#ENTITIES         = [];
-	#THROTTLE         = 0;
-	#THROTTLE_TIMEOUT = null;
-	#NEXT_FRAME       = null;
-	#CURSOR_X;
-	#CURSOR_Y;
+	// API HOOKS
+	// --------------------------
+	#CANVAS           = null; // reference to the canvas element
+	#CONTEXT          = null; // refernece to the canvas' API
+
+	// DEBUG CONTROLS
+	#THROTTLE         = 1000; // (ms) minimum time between frames
+	
+	// PITCH DIMENSIONS
+	// ---------------------------
+	#WIDTH            = 45;  // width of pitch in meters
+	#HEIGHT           = 90;  // length of pitch in meters
+
+	// PLAYER DIMENSIONS
+	// -----------------------------
+	#PLAYER_SIZE      = 1; // radius of player in meters (should this be here?)
+
+	// CACHED VALUES
+	// ----------------------------
+	#throttle_timeout = null; // reference to the setTimeout that is throttling the render
+	#next_frame       = null; // refernece to the next requestAnimationFrame
+	#ENTITIES         = [];   // nested tree of every entity in the game
+	#cursor_x;      // last known x position of the cursor
+	#cursor_y;      // last known y position of the cursor
+	UNIT;           // the number of pixels per meter
+	#width;         // pixel width of canvas
+	#height;        // pixel height of canvas
+
 
 	constructor(config){
-		const {
-			canvas
-		} = config;
+	
+		const { window } = config;
 
 		// scope binding
-		this.updateSize       = this.updateSize.bind(this);
-		this.scale            = this.scale.bind(this);
-		this.initEntities     = this.initEntities.bind(this);
-		this.render           = this.render.bind(this);
-		this.requestRender    = this.requestRender.bind(this);
-		this.clearRenderQueue = this.clearRenderQueue.bind(this);
-		this.updateCursorPosition = this.updateCursorPosition.bind(this);
+		// -------------------
+		this.createCanvas  = this.createCanvas.bind(this);
+		this.updateUnit    = this.updateUnit.bind(this);
+		this.initEntities  = this.initEntities.bind(this);
+		this.render        = this.render.bind(this);
+		this.requestRender = this.requestRender.bind(this);
 
-		// apply config
-		this.#CANVAS  = canvas;
-		this.#CONTEXT = canvas.getContext("2d");
 
-		this.updateSize(this.#CANVAS);
-
-		// initialise scene
+		// setup
+		// --------------------
+		this.UNIT      = this.updateUnit(window);
+		this.#CANVAS   = this.createCanvas();
+		this.#CONTEXT  = this.#CANVAS.getContext("2d");
 		this.#ENTITIES = this.initEntities();
 
+
+		// begin
+		// --------------------
 		this.render();
 	}// constructor
+
+	updateUnit({ innerWidth, innerHeight }){
+
+		return (innerHeight * 6) / this.#HEIGHT;
+	}// updateUnit
+
+	createCanvas(){
+		const canvas  = document.createElement("canvas");
+		canvas.width  = this.#width  = this.#WIDTH * this.UNIT;
+		canvas.height = this.#height = this.#HEIGHT * this.UNIT;
+
+		return canvas;
+	}// createCanvas
+
+	getCanvas(){
+
+		return this.#CANVAS;
+	}// getCanvas
 
 
 	/* INIT ENTITIES
@@ -52,38 +84,43 @@ export default class Game {
 		*/
 	initEntities(){
 		//make this a private function later
-		const centerYGuide = new Guide({ 
+		const centerYGuide = new Guide({
+			game: this,
 			type: "VERTICAL", 
 			color: "red",
-			position: { x: this.#CENTER_X },
+			position: { x: this.#WIDTH / 2 },
 			length: this.#HEIGHT
 		});
 
 		const centerXGuide = new Guide({
+			game: this,
 			type: "HORIZONTAL",
 			color: "blue",
-			position: { y: this.#CENTER_Y },
+			position: { y: this.#HEIGHT / 2 },
 			length: this.#WIDTH
 		});
 
 		const goal = new Goal({
-			playerSize: this.#PLAYER_SIZE,
-			position: { x: this.#CENTER_X }
-		});
-
-		const player = new Player({
-			size: this.#PLAYER_SIZE,
-			position: {
-				x: this.#CENTER_X + 10,
-				y: this.#CENTER_Y + 10
+			game: this,
+			position: { 
+				x: this.#WIDTH / 2,
+				y: 0,
 			}
 		});
+
+		// const player = new Player({
+		// 	size: this.#PLAYER_SIZE,
+		// 	position: {
+		// 		x: this.#CENTER_X + 10,
+		// 		y: this.#CENTER_Y + 10
+		// 	}
+		// });
 
 		return ([
 			centerYGuide,
 			centerXGuide,
 			goal,
-			player
+			// player
 		]);
 	}// initEntities
 
@@ -93,45 +130,45 @@ export default class Game {
 		update everything that needs to know how big the canvas
 		is - including child entities
 		*/
-	updateSize({ width, height }){
+	// updateSize({ width, height }){
 
-		// don't render anything whilst we're resizing
-		this.clearRenderQueue();
+	// 	// don't render anything whilst we're resizing
+	// 	this.clearRenderQueue();
 
-		//scale positions based on the new canvas size
-		this.scale({
-			width: this.#WIDTH,
-			height: this.#HEIGHT
-		}, {
-			width,
-			height
-		});
+	// 	//scale positions based on the new canvas size
+	// 	this.scale({
+	// 		width: this.#WIDTH,
+	// 		height: this.#HEIGHT
+	// 	}, {
+	// 		width,
+	// 		height
+	// 	});
 
-		// update 
-		this.#WIDTH       = width;
-		this.#HEIGHT      = height;
-		this.#PLAYER_SIZE = height * this.#PLAYER_SCALE;
-		this.#CENTER_X    = width / 2;
-		this.#CENTER_Y    = height / 2;
+	// 	// update 
+	// 	this.#WIDTH       = width;
+	// 	this.#HEIGHT      = height;
+	// 	this.#PLAYER_SIZE = height * this.#PLAYER_SCALE;
+	// 	this.#CENTER_X    = width / 2;
+	// 	this.#CENTER_Y    = height / 2;
 
-		this.requestRender();
-	}// updateSize
+	// 	this.requestRender();
+	// }// updateSize
 
 	/* UPDATE CURSOR POSITION
 	-----------------------------
 		Update game state with cursor position
 		*/
-	updateCursorPosition(position){
-		const { x, y } = position;
-		this.#CURSOR_X = x;
-		this.#CURSOR_Y = y;
+	// updateCursorPosition(position){
+	// 	const { x, y } = position;
+	// 	this.#CURSOR_X = x;
+	// 	this.#CURSOR_Y = y;
 
-		for(let child of this.#ENTITIES){
-			if(child.updateCursorPosition){
-				child.updateCursorPosition(position);
-			}
-		}
-	}// updateCursorPosition
+	// 	for(let child of this.#ENTITIES){
+	// 		if(child.updateCursorPosition){
+	// 			child.updateCursorPosition(position);
+	// 		}
+	// 	}
+	// }// updateCursorPosition
 
 
 
@@ -140,21 +177,21 @@ export default class Game {
 		whenever the canvas size updates, scale the size and
 		position of all entities in the scene
 		*/
-	scale(prevSize, nextSize){
-		for(let entity of this.#ENTITIES){
-			entity.scale(prevSize, nextSize);
-		}
-	}// scale
+	// scale(prevSize, nextSize){
+	// 	for(let entity of this.#ENTITIES){
+	// 		entity.scale(prevSize, nextSize);
+	// 	}
+	// }// scale
 
 
 	/* CLEAR RENDER QUEUE
 	---------------------------
 		stop any renders that have already been requested 
 		*/
-	clearRenderQueue(){
-		clearTimeout(this.#THROTTLE_TIMEOUT);
-		cancelAnimationFrame(this.#NEXT_FRAME);
-	}// clearRenderQueue
+	// clearRenderQueue(){
+	// 	clearTimeout(this.#THROTTLE_TIMEOUT);
+	// 	cancelAnimationFrame(this.#NEXT_FRAME);
+	// }// clearRenderQueue
 
 
 	/* REQUEST RENDER
@@ -163,7 +200,7 @@ export default class Game {
 		*/
 	requestRender(){
 
-		this.#NEXT_FRAME = requestAnimationFrame(this.render);
+		this.#next_frame = requestAnimationFrame(this.render);
 	} // requestRender
 
 
@@ -172,8 +209,12 @@ export default class Game {
 		draw every entity in the game to the canvas
 		*/
 	render(){
-
-		this.#CONTEXT.clearRect(0, 0, this.#WIDTH, this.#HEIGHT);
+		const widthPx  = this.#WIDTH * this.UNIT;
+		const heightPx = this.#HEIGHT * this.width;
+		this.#CONTEXT.clearRect(
+			0, 0, 
+			widthPx, heightPx
+		);
 
 		// render every entity in the game scene
 		for(let entity of this.#ENTITIES){
@@ -181,6 +222,6 @@ export default class Game {
 		}
 
 		// queue up timeout
-		this.#THROTTLE_TIMEOUT = setTimeout(this.requestRender, this.#THROTTLE);
+		this.#throttle_timeout = setTimeout(this.requestRender, this.#THROTTLE);
 	}// render
 }// Game

@@ -2,6 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 import App from "COMPONENTS/App/";
+import Game from "ENTITIES/Game/";
+
 import "SHARED/reset.scss";
 import "SHARED/global.scss";
 
@@ -9,10 +11,17 @@ window.addEventListener("DOMContentLoaded", init);
 
 function init(){
 
-	const canvas = document.getElementById("canvas");
+	const config = {
+		window
+	};
+
+	const game   = new Game(config);
+	const canvas = game.getCanvas();
 
 	ReactDOM.render(
-		<App canvas={ canvas }/>,
+		<App />,
 		document.getElementById("app")
 	);
+
+	document.body.appendChild(canvas);
 }
