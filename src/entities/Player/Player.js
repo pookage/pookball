@@ -104,8 +104,6 @@ export default class Player {
 		const x = this.#X * this.#GAME.UNIT;
 		const y = this.#Y * this.#GAME.UNIT;
 
-		console.log(x, cursor_x, y, cursor_y);
-
 		const dx    = cursor_x - x;
 		const dy    = cursor_y - y;
 		const angle = Math.atan2(dx, -dy);

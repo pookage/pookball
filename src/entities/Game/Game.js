@@ -129,7 +129,7 @@ export default class Game {
 		Update game state with cursor position
 		*/
 	updateCursorPosition(event){
-		const { clientX: x, clientY: y } = event;
+		const { offsetX: x, offsetY: y } = event;
 
 		this.CURSOR_X = x;
 		this.CURSOR_Y = y;
