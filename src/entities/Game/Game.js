@@ -1,7 +1,7 @@
 import Guide from "ENTITIES/Guide/";
 import Goal from "ENTITIES/Goal/";
 import Player from "ENTITIES/Player/";
-import { debounce } from "SHARED/utils.js";
+import { debounce, calculateScroll } from "SHARED/utils.js";
 
 export default class Game {
 
@@ -159,7 +159,12 @@ export default class Game {
 	render(){
 		const now       = Date.now();
 		const deltaTime = (now - this.#last_tick) / 1000;
-		
+		const canvas    = this.getCanvas();
+		const cursor = { x: CURSOR_X, y: CURSOR_Y };
+		const scroll = calculateScroll(cursor, canvas);
+
+		console.log(scroll.x);
+
 		const widthPx   = this.#WIDTH * this.UNIT;
 		const heightPx  = this.#HEIGHT * this.UNIT;
 
