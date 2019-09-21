@@ -1,6 +1,7 @@
 import Guide from "ENTITIES/Guide/";
 import Goal from "ENTITIES/Goal/";
 import Player from "ENTITIES/Player/";
+import { debounce } from "SHARED/utils.js";
 
 export default class Game {
 
@@ -10,7 +11,7 @@ export default class Game {
 	#CONTEXT          = null; // refernece to the canvas' API
 
 	// DEBUG CONTROLS
-	#THROTTLE         = 0; // (ms) minimum time between frames
+	#THROTTLE         = 1000 / 60; // (ms) minimum time between frames
 	
 	// PITCH DIMENSIONS
 	// ---------------------------
@@ -19,14 +20,15 @@ export default class Game {
 
 	// CACHED VALUES
 	// ----------------------------
-	#throttle_timeout = null; // reference to the setTimeout that is throttling the render
-	#next_frame       = null; // refernece to the next requestAnimationFrame
-	#ENTITIES         = [];   // nested tree of every entity in the game
-	CURSOR_X;      // last known x position of the cursor
-	CURSOR_Y;      // last known y position of the cursor
-	UNIT;           // the number of pixels per meter
-	#width;         // pixel width of canvas
-	#height;        // pixel height of canvas
+	#throttle_timeout = null;       // reference to the setTimeout that is throttling the render
+	#next_frame       = null;       // refernece to the next requestAnimationFrame
+	#ENTITIES         = [];         // nested tree of every entity in the game
+	#last_tick        = Date.now(); // time of previous tick
+	CURSOR_X;        // last known x position of the cursor
+	CURSOR_Y;        // last known y position of the cursor
+	UNIT;            // the number of pixels per meter
+	#width;          // pixel width of canvas
+	#height;         // pixel height of canvas
 
 
 	constructor(config){
@@ -41,6 +43,7 @@ export default class Game {
 		this.render        = this.render.bind(this);
 		this.requestRender = this.requestRender.bind(this);
 		this.updateCursorPosition = this.updateCursorPosition.bind(this);
+		this.requestCursorUpdate = this.requestCursorUpdate.bind(this);
 
 
 		// setup
@@ -66,7 +69,7 @@ export default class Game {
 		canvas.width  = this.#width  = this.#WIDTH * this.UNIT;
 		canvas.height = this.#height = this.#HEIGHT * this.UNIT;
 
-		canvas.addEventListener("mousemove", this.updateCursorPosition);
+		canvas.addEventListener("mousemove", this.requestCursorUpdate);
 
 		return canvas;
 	}// createCanvas
@@ -128,6 +131,9 @@ export default class Game {
 	-----------------------------
 		Update game state with cursor position
 		*/
+	requestCursorUpdate(event){
+		debounce(this.updateCursorPosition.bind(true, event), 60, "GAME_CURSOR");
+	}//requestCursorUpdate
 	updateCursorPosition(event){
 		const { offsetX: x, offsetY: y } = event;
 
@@ -151,8 +157,12 @@ export default class Game {
 		draw every entity in the game to the canvas
 		*/
 	render(){
-		const widthPx  = this.#WIDTH * this.UNIT;
-		const heightPx = this.#HEIGHT * this.UNIT;
+		const now       = Date.now();
+		const deltaTime = (now - this.#last_tick) / 1000;
+		
+		const widthPx   = this.#WIDTH * this.UNIT;
+		const heightPx  = this.#HEIGHT * this.UNIT;
+
 		this.#CONTEXT.clearRect(
 			0, 0, 
 			widthPx, heightPx
@@ -165,5 +175,7 @@ export default class Game {
 
 		// queue up timeout
 		this.#throttle_timeout = setTimeout(this.requestRender, this.#THROTTLE);
+
+		this.#last_tick = Date.now();
 	}// render
 }// Game

@@ -1,4 +1,3 @@
-import Entity from "ENTITIES/Entity/";
 import DirectionIndicator from "ENTITIES/DirectionIndicator/";
 
 export default class Player {
