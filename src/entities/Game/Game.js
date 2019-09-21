@@ -17,10 +17,6 @@ export default class Game {
 	#WIDTH            = 45;  // width of pitch in meters
 	#HEIGHT           = 90;  // length of pitch in meters
 
-	// PLAYER DIMENSIONS
-	// -----------------------------
-	#PLAYER_SIZE      = 1; // radius of player in meters (should this be here?)
-
 	// CACHED VALUES
 	// ----------------------------
 	#throttle_timeout = null; // reference to the setTimeout that is throttling the render
@@ -108,19 +104,19 @@ export default class Game {
 			}
 		});
 
-		// const player = new Player({
-		// 	size: this.#PLAYER_SIZE,
-		// 	position: {
-		// 		x: this.#CENTER_X + 10,
-		// 		y: this.#CENTER_Y + 10
-		// 	}
-		// });
+		const player = new Player({
+			game: this,
+			position: {
+				x: this.#WIDTH / 2,
+				y: 5
+			}
+		});
 
 		return ([
 			centerYGuide,
 			centerXGuide,
 			goal,
-			// player
+			player
 		]);
 	}// initEntities
 

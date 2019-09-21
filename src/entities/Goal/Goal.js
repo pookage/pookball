@@ -27,15 +27,12 @@ export default class Goal {
 
 	render(context){
 
-
 		const width  = this.#WIDTH * this.#GAME.UNIT;
 		const height = this.#HEIGHT * this.#GAME.UNIT;
 		const radius = width / 2;
 
 		const xStart = (this.#X * this.#GAME.UNIT) - radius;
 		const yStart = (this.#Y * this.#GAME.UNIT);
-
-		console.log(xStart, yStart, width, height)
 
 		context.fillStyle = "green";
 		context.fillRect(
