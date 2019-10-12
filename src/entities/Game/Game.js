@@ -47,6 +47,7 @@ export default class Game {
 		this.requestRender = this.requestRender.bind(this);
 		this.updateCursorPosition = this.updateCursorPosition.bind(this);
 		this.requestCursorUpdate = this.requestCursorUpdate.bind(this);
+		this.updateUnitOnResize = this.updateUnitOnResize.bind(this);
 
 
 		// setup
@@ -59,6 +60,7 @@ export default class Game {
 
 		// begin
 		// --------------------
+		this.updateUnitOnResize();
 		this.render();
 	}// constructor
 
@@ -81,6 +83,11 @@ export default class Game {
 
 		return this.#CANVAS;
 	}// getCanvas
+
+	updateUnitOnResize(){
+
+		window.addEventListener("resize", this.updateUnit);
+	}// updateUnitOnResize
 
 
 	/* INIT ENTITIES
