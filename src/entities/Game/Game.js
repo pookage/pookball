@@ -12,6 +12,7 @@ export default class Game {
 
 	// DEBUG CONTROLS
 	#THROTTLE         = 1000 / 90; // (ms) minimum time between frames
+	#DISABLE_SCROLL   = true;
 	
 	// PITCH DIMENSIONS
 	// ---------------------------
@@ -193,7 +194,7 @@ export default class Game {
 		}
 
 		// update scroll of container
-		window.scrollTo(scroll.x, scroll.y);
+		if(!this.#DISABLE_SCROLL) window.scrollTo(scroll.x, scroll.y);
 
 		// queue up timeout
 		this.#throttle_timeout = setTimeout(this.requestRender, this.#THROTTLE);
