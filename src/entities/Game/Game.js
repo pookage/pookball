@@ -200,7 +200,7 @@ export default class Game {
 
 		// render every entity in the game scene
 		for(let entity of this.#ENTITIES){
-			entity.render(this.#CONTEXT);
+			entity.render(this.#CONTEXT, deltaTime);
 		}
 
 		// update scroll of container

@@ -5,12 +5,16 @@ export default class Player {
 	#X;
 	#Y;
 	#SIZE = 1;
+	#SPEED = 3;
 	#GAME;
 	#RADIUS;
 	#DEGREES_360 = Math.PI * 2;
 	#CURSOR_X;
 	#CURSOR_Y;
 	#CHILDREN;
+
+	ACTIVE = true;
+
 
 	constructor(config){
 
@@ -27,7 +31,8 @@ export default class Player {
 		this.render = this.render.bind(this);
 		this.rotate = this.rotate.bind(this);
 		this.initChildren = this.initChildren.bind(this);
-		this.calculateRotationFromCursor = this.calculateRotationFromCursor.bind(this);
+		this.calculateRotationFromCursor  = this.calculateRotationFromCursor.bind(this);
+		this.calculateDirectionFromCursor = this.calculateDirectionFromCursor.bind(this);
 
 		// setup
 		// ------------------------
@@ -54,16 +59,42 @@ export default class Player {
 		return [ directionIndicator ];
 	}// initChildren
 
-	render(context){
-		const x = this.#X * this.#GAME.UNIT;
-		const y = this.#Y * this.#GAME.UNIT;
+	render(context, deltaTime){
 		const radius = this.#RADIUS * this.#GAME.UNIT;
 
+		// ROTATION
+		// ----------------------
+		// calculate rotation of the player
 		const rotation = this.calculateRotationFromCursor({
 			x: this.#GAME.CURSOR_X,
 			y: this.#GAME.CURSOR_Y
 		});
 
+		// MOVEMENT
+		// -----------------------
+		// calculate direction vector
+		const direction = this.calculateDirectionFromCursor({
+			x: this.#GAME.CURSOR_X,
+			y: this.#GAME.CURSOR_Y
+		});
+
+		// if the target is far enough away, move there
+		if(direction.distance > 0.5){
+
+			const moveX = ((direction.x * this.#SPEED)) * deltaTime;
+			const moveY = ((direction.y * this.#SPEED)) * deltaTime;
+
+			this.#X = this.#X + moveX
+			this.#Y = this.#Y + moveY
+		}
+
+		// convert position to pixels for rendering
+		const x = this.#X * this.#GAME.UNIT;
+		const y = this.#Y * this.#GAME.UNIT;
+
+
+		// DRAW
+		// -------------------
 		context.fillStyle = "black";
 
 		this.rotate(context, rotation);
@@ -77,10 +108,14 @@ export default class Player {
 		);
 		context.fill();
 
+		// UPDATE CHILDREN
+		// ---------------------
 		for(let child of this.#CHILDREN){
-			child.render(context);
+			child.updatePosition({ x: this.#X, y: this.#Y });
+			child.render(context, deltaTime);
 		}
 
+		// restore canvas rotation
 		this.rotate(context, -rotation);
 	}// render
 
@@ -109,5 +144,33 @@ export default class Player {
 
 		return angle;
 	}// calculateRotationFromCursor
+
+	calculateDirectionFromCursor(cursor){
+
+		const { 
+			x: cursor_x = 0, 
+			y: cursor_y = 0 
+		} = cursor;
+
+		const x = this.#X * this.#GAME.UNIT;
+		const y = this.#Y * this.#GAME.UNIT;
+
+		const xOffset      = x - cursor_x;
+		const yOffset      = y - cursor_y;
+		const distance     = Math.hypot(xOffset, yOffset)
+		const xNormal      = -(xOffset / distance);
+		const yNormal      = -(yOffset / distance);
+		const distanceUnit = distance / this.#GAME.UNIT;
+
+		const vector = {
+			x: xNormal,
+			y: yNormal,
+			distance: distanceUnit,
+		};
+
+		console.log(distanceUnit)
+
+		return vector;
+	}// calculateDirectionFromCursor
 
 }// Player

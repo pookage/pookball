@@ -27,9 +27,10 @@ export default class DirectionIndicator {
 		this.#OFFSET    = size * 1.5;
 
 		this.render = this.render.bind(this);
+		this.updatePosition = this.updatePosition.bind(this);
 	}// constructor
 
-	render(context){
+	render(context, deltaTime){
 
 		const thickness = this.#THICKNESS * this.#GAME.UNIT;
 		const x = this.#X * this.#GAME.UNIT;
@@ -56,4 +57,9 @@ export default class DirectionIndicator {
 		);
 		context.stroke();
 	}// render
+
+	updatePosition({ x, y }){
+		this.#X = x;
+		this.#Y = y;
+	}// updatePosition
 }
