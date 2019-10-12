@@ -12,7 +12,7 @@ export default class Game {
 
 	// DEBUG CONTROLS
 	#THROTTLE            = 1000 / 90; // (ms) minimum time between frames
-	#DISABLE_SCROLL      = true;
+	#DISABLE_SCROLL      = false;
 	#DISABLE_CURSOR_LOCK = true;
 	
 	// PITCH DIMENSIONS
@@ -26,7 +26,7 @@ export default class Game {
 	#next_frame       = null;       // refernece to the next requestAnimationFrame
 	#ENTITIES         = [];         // nested tree of every entity in the game
 	#last_tick        = Date.now(); // time of previous tick
-	#SCROLL_SPEED     = 500;        // speed at which to scroll the window
+	#SCROLL_SPEED     = 200;        // speed at which to scroll the window
 	CURSOR_X;        // last known absolute x position of the cursor
 	CURSOR_Y;        // last known absolute y position of the cursor
 	WINDOW_X;        // last known relative x position of the cursor
