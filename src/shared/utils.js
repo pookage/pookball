@@ -9,11 +9,11 @@ export function debounce(callback, fps = 30, key="DEBOUNCE"){
 	}
 }// debounce
 
-export function calculateScroll({ x, y }, canvas){
+export function calculateScroll({ x, y }, canvas, speed, deltaTime){
 
 	const { innerWidth, innerHeight, scrollX, scrollY } = window;
 	const { clientHeight, clientWidth } = canvas;
-	const hitbox = innerHeight * 0.1;
+	const hitbox = innerHeight * 0.20;
 
 	const scrollLeft = x < hitbox;
 	const scrollRight = x > (innerWidth - hitbox);
@@ -25,7 +25,10 @@ export function calculateScroll({ x, y }, canvas){
 	const canScrollUp = scrollY > 0;
 	const canScrollDown = (clientHeight - scrollY - innerHeight) > 0;
  
-	const scrollStep = 10;
+	// console.log({ scrollUp, y, hitbox });
+
+
+	const scrollStep = speed * deltaTime;
 
 	const nextScroll = {
 		y: scrollY,

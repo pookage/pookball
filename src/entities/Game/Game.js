@@ -11,7 +11,7 @@ export default class Game {
 	#CONTEXT          = null; // refernece to the canvas' API
 
 	// DEBUG CONTROLS
-	#THROTTLE         = 1000 / 60; // (ms) minimum time between frames
+	#THROTTLE         = 1000 / 90; // (ms) minimum time between frames
 	
 	// PITCH DIMENSIONS
 	// ---------------------------
@@ -24,8 +24,11 @@ export default class Game {
 	#next_frame       = null;       // refernece to the next requestAnimationFrame
 	#ENTITIES         = [];         // nested tree of every entity in the game
 	#last_tick        = Date.now(); // time of previous tick
-	CURSOR_X;        // last known x position of the cursor
-	CURSOR_Y;        // last known y position of the cursor
+	#SCROLL_SPEED     = 500;        // speed at which to scroll the window
+	CURSOR_X;        // last known absolute x position of the cursor
+	CURSOR_Y;        // last known absolute y position of the cursor
+	WINDOW_X;        // last known relative x position of the cursor
+	WINDOW_Y;        // last known relative y position of the cursor
 	UNIT;            // the number of pixels per meter
 	#width;          // pixel width of canvas
 	#height;         // pixel height of canvas
@@ -135,10 +138,15 @@ export default class Game {
 		debounce(this.updateCursorPosition.bind(true, event), 60, "GAME_CURSOR");
 	}//requestCursorUpdate
 	updateCursorPosition(event){
-		const { offsetX: x, offsetY: y } = event;
+		const { 
+			offsetX, offsetY,
+			clientX, clientY
+		} = event; // need absolute for player
 
-		this.CURSOR_X = x;
-		this.CURSOR_Y = y;
+		this.CURSOR_X = offsetX;
+		this.CURSOR_Y = offsetY;
+		this.WINDOW_X = clientX;
+		this.WINDOW_Y = clientY;
 	}// updateCursorPosition
 
 
@@ -160,10 +168,9 @@ export default class Game {
 		const now       = Date.now();
 		const deltaTime = (now - this.#last_tick) / 1000;
 		const canvas    = this.getCanvas();
-		const cursor = { x: CURSOR_X, y: CURSOR_Y };
-		const scroll = calculateScroll(cursor, canvas);
-
-		console.log(scroll.x);
+		
+		const cursor    = { x: this.WINDOW_X, y: this.WINDOW_Y };
+		const scroll    = calculateScroll(cursor, canvas, this.#SCROLL_SPEED, deltaTime);
 
 		const widthPx   = this.#WIDTH * this.UNIT;
 		const heightPx  = this.#HEIGHT * this.UNIT;
@@ -177,6 +184,9 @@ export default class Game {
 		for(let entity of this.#ENTITIES){
 			entity.render(this.#CONTEXT);
 		}
+
+		// update scroll of container
+		window.scrollTo(scroll.x, scroll.y);
 
 		// queue up timeout
 		this.#throttle_timeout = setTimeout(this.requestRender, this.#THROTTLE);
