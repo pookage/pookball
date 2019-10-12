@@ -6,68 +6,54 @@ export default class DirectionIndicator {
 	#HEIGHT;
 	#OFFSET;
 	#THICKNESS = 10;
+	#GAME;
 
 	constructor(config){
 		const {
+			game,
 			position: {
 				x = 0,
 				y = 0
 			},
-			width = 1,
-			offset,
-			thickness = this.#THICKNESS
+			size,
 		} = config;
 
+		this.#GAME      = game;
 		this.#X         = x;
 		this.#Y         = y;
-		this.#RADIUS    = width / 2;
-		this.#HEIGHT    = width / 2;
-		this.#THICKNESS = thickness;
-		this.#OFFSET    = offset;
+		this.#RADIUS    = size / 2;
+		this.#HEIGHT    = size / 2;
+		this.#THICKNESS = size / 5;
+		this.#OFFSET    = size * 1.5;
 
 		this.render = this.render.bind(this);
-		this.scale  = this.scale.bind(this);
 	}// constructor
 
 	render(context){
+
+		const thickness = this.#THICKNESS * this.#GAME.UNIT;
+		const x = this.#X * this.#GAME.UNIT;
+		const y = this.#Y * this.#GAME.UNIT;
+		const radius = this.#RADIUS * this.#GAME.UNIT;
+		const offset = this.#OFFSET * this.#GAME.UNIT;
+		const height = this.#HEIGHT * this.#GAME.UNIT;
+
 		// direction indicator
 		context.strokeStyle = "black";
-		context.lineWidth   = this.#THICKNESS;
+		context.lineWidth   = thickness;
 		context.beginPath();
 		context.moveTo(
-			this.#X - this.#RADIUS, 
-			this.#Y - this.#OFFSET,
+			x - radius, 
+			y - offset,
 		);
 		context.lineTo(
-			this.#X, 
-			this.#Y - (this.#OFFSET + this.#HEIGHT)
+			x, 
+			y - (offset + height)
 		);
 		context.lineTo(
-			this.#X + this.#RADIUS, 
-			this.#Y - this.#OFFSET
+			x + radius, 
+			y - offset
 		);
 		context.stroke();
 	}// render
-
-	scale(prev, next){
-		const { width: prevWidth, height: prevHeight } = prev;
-		const { width: nextWidth, height: nextHeight } = next;
-
-		const scalars = {
-			x: this.#X / prevWidth,
-			y: this.#Y / prevHeight,
-			radius: this.#RADIUS / prevWidth,
-			height: this.#HEIGHT / prevWidth,
-			offset: this.#OFFSET / prevWidth,
-			thickness: this.#THICKNESS / prevWidth
-		};
-
-		this.#X         = scalars.x * nextWidth;
-		this.#Y         = scalars.y * nextHeight;
-		this.#RADIUS    = scalars.radius * nextWidth;
-		this.#HEIGHT    = scalars.height * nextWidth;
-		this.#OFFSET    = scalars.offset * nextWidth;
-		this.#THICKNESS = scalars.thickness * nextWidth;
-	}// scale
-
 }
