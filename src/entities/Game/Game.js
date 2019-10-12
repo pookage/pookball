@@ -11,8 +11,9 @@ export default class Game {
 	#CONTEXT          = null; // refernece to the canvas' API
 
 	// DEBUG CONTROLS
-	#THROTTLE         = 1000 / 90; // (ms) minimum time between frames
-	#DISABLE_SCROLL   = true;
+	#THROTTLE          = 1000 / 90; // (ms) minimum time between frames
+	#DISABLE_SCROLL    = true;
+	#ALLOW_CURSOR_LOCK = false;
 	
 	// PITCH DIMENSIONS
 	// ---------------------------
@@ -49,6 +50,7 @@ export default class Game {
 		this.updateCursorPosition = this.updateCursorPosition.bind(this);
 		this.requestCursorUpdate = this.requestCursorUpdate.bind(this);
 		this.updateUnitOnResize = this.updateUnitOnResize.bind(this);
+		this.constrainCursor = this.constrainCursor.bind(this);
 
 
 		// setup
@@ -76,6 +78,7 @@ export default class Game {
 		canvas.height = this.#height = this.#HEIGHT * this.UNIT;
 
 		canvas.addEventListener("mousemove", this.requestCursorUpdate);
+		canvas.addEventListener("click", this.constrainCursor);
 
 		return canvas;
 	}// createCanvas
@@ -147,15 +150,22 @@ export default class Game {
 	}//requestCursorUpdate
 	updateCursorPosition(event){
 		const { 
-			offsetX, offsetY,
-			clientX, clientY
+			offsetX, offsetY,     // absolute position on canvas
+			clientX, clientY,     // absolute position on window
+			movementX, movementY, // relative change since last event
 		} = event; // need absolute for player
+
 
 		this.CURSOR_X = offsetX;
 		this.CURSOR_Y = offsetY;
 		this.WINDOW_X = clientX;
 		this.WINDOW_Y = clientY;
 	}// updateCursorPosition
+	constrainCursor(){
+		if(this.ALLOW_CURSOR_LOCK){
+			this.#CANVAS.requestPointerLock();
+		}
+	}// constainCurosr
 
 
 	/* REQUEST RENDER
