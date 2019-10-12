@@ -11,9 +11,9 @@ export default class Game {
 	#CONTEXT          = null; // refernece to the canvas' API
 
 	// DEBUG CONTROLS
-	#THROTTLE          = 1000 / 90; // (ms) minimum time between frames
-	#DISABLE_SCROLL    = true;
-	#ALLOW_CURSOR_LOCK = false;
+	#THROTTLE            = 1000 / 90; // (ms) minimum time between frames
+	#DISABLE_SCROLL      = true;
+	#DISABLE_CURSOR_LOCK = true;
 	
 	// PITCH DIMENSIONS
 	// ---------------------------
@@ -162,7 +162,7 @@ export default class Game {
 		this.WINDOW_Y = clientY;
 	}// updateCursorPosition
 	constrainCursor(){
-		if(this.ALLOW_CURSOR_LOCK){
+		if(!this.#DISABLE_CURSOR_LOCK){
 			this.#CANVAS.requestPointerLock();
 		}
 	}// constainCurosr
