@@ -24,6 +24,7 @@ export default class Game {
 
 	// CACHED VALUES
 	// ----------------------------
+	DEGREES_360       = Math.PI * 2;
 	#throttle_timeout = null;       // reference to the setTimeout that is throttling the render
 	#next_frame       = null;       // refernece to the next requestAnimationFrame
 	#ENTITIES         = [];         // nested tree of every entity in the game

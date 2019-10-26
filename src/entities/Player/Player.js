@@ -1,4 +1,5 @@
 import DirectionIndicator from "ENTITIES/DirectionIndicator/";
+import ProximityIndicator from "ENTITIES/ProximityIndicator/";
 
 export default class Player {
 
@@ -14,7 +15,6 @@ export default class Player {
 	#SPEED__RUN  = 6;
 	#GAME;
 	#RADIUS;
-	#DEGREES_360 = Math.PI * 2;
 	#CURSOR_X;
 	#CURSOR_Y;
 	#CHILDREN;
@@ -52,16 +52,39 @@ export default class Player {
 	
 	initChildren(){
 
-		const directionIndicator = new DirectionIndicator({
+		const options = {
 			game: this.#GAME,
 			position: { 
 				x: this.#X, 
 				y: this.#Y 
-			},
+			}
+		};
+		const directionIndicator = new DirectionIndicator({
+			...options,
 			size: this.#RADIUS,
 		});
 
-		return [ directionIndicator ];
+		const close = new ProximityIndicator({
+			...options,
+			radius: this.#SPEED_THRESHOLD__WALK
+		});
+
+		const near = new ProximityIndicator({
+			...options,
+			radius: this.#SPEED_THRESHOLD__JOG
+		});
+
+		const far = new ProximityIndicator({
+			...options,
+			radius: this.#SPEED_THRESHOLD__JOG * 2
+		});
+
+		return [
+			directionIndicator,
+			close,
+			near,
+			far
+		];
 	}// initChildren
 
 	render(context, deltaTime){
@@ -106,7 +129,7 @@ export default class Player {
 			x, y,
 			radius,
 			0,
-			this.#DEGREES_360
+			this.#GAME.DEGREES_360
 		);
 		context.fill();
 
