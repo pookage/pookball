@@ -1,7 +1,7 @@
 html, body, :global(#app){
 	height: 100%;
-	background-color: #ccc;
 	overflow: hidden;
+	background: url("assets/textures/grass.png") center / 25% repeat, #eee;
 }
 
 canvas {
