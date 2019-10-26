@@ -5,7 +5,13 @@ export default class Player {
 	#X;
 	#Y;
 	#SIZE = 1;
-	#SPEED = 3;
+
+	#SPEED_THRESHOLD__WALK = 2;
+	#SPEED_THRESHOLD__JOG  = 5;
+
+	#SPEED__WALK = 2;
+	#SPEED__JOG  = 4;
+	#SPEED__RUN  = 6;
 	#GAME;
 	#RADIUS;
 	#DEGREES_360 = Math.PI * 2;
@@ -33,6 +39,7 @@ export default class Player {
 		this.initChildren = this.initChildren.bind(this);
 		this.calculateRotationFromCursor  = this.calculateRotationFromCursor.bind(this);
 		this.calculateDirectionFromCursor = this.calculateDirectionFromCursor.bind(this);
+		this.calculateSpeedFromDistance   = this.calculateSpeedFromDistance.bind(this);
 
 		// setup
 		// ------------------------
@@ -76,15 +83,12 @@ export default class Player {
 			y: this.#GAME.CURSOR_Y
 		});
 
-		// if the target is far enough away, move there
-		if(direction.distance > this.#RADIUS){
+		const speed = this.calculateSpeedFromDistance(direction.distance);
+		const moveX = ((direction.x * speed)) * deltaTime;
+		const moveY = ((direction.y * speed)) * deltaTime;
 
-			const moveX = ((direction.x * this.#SPEED)) * deltaTime;
-			const moveY = ((direction.y * this.#SPEED)) * deltaTime;
-
-			this.#X = this.#X + moveX
-			this.#Y = this.#Y + moveY
-		}
+		this.#X = this.#X + moveX
+		this.#Y = this.#Y + moveY
 
 		// convert position to pixels for rendering
 		const x = this.#X * this.#GAME.UNIT;
@@ -182,5 +186,18 @@ export default class Player {
 
 		return vector;
 	}// calculateDirectionFromCursor
+
+	calculateSpeedFromDistance(distance){
+
+		const on    = distance < this.#RADIUS;
+		const close = distance < this.#SPEED_THRESHOLD__WALK;
+		const near  = distance < this.#SPEED_THRESHOLD__JOG;
+		const far   = distance >= this.#SPEED_THRESHOLD__JOG;
+
+		if(on)         return 0;
+		else if(close) return this.#SPEED__WALK;
+		else if(near)  return this.#SPEED__JOG;
+		else if(far)   return this.#SPEED__RUN;
+	}// distance
 
 }// Player
