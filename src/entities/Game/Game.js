@@ -53,6 +53,9 @@ export default class Game {
 		this.requestCursorUpdate = this.requestCursorUpdate.bind(this);
 		this.updateUnitOnResize = this.updateUnitOnResize.bind(this);
 		this.constrainCursor = this.constrainCursor.bind(this);
+		this.pauseOnInactive = this.pauseOnInactive.bind(this);
+		this.pause = this.pause.bind(this);
+		this.resume = this.resume.bind(this);
 
 
 		// setup
@@ -66,6 +69,7 @@ export default class Game {
 		// begin
 		// --------------------
 		this.updateUnitOnResize();
+		this.pauseOnInactive();
 		this.render();
 	}// constructor
 
@@ -94,6 +98,20 @@ export default class Game {
 
 		window.addEventListener("resize", this.updateUnit);
 	}// updateUnitOnResize
+
+	pauseOnInactive(){
+		window.addEventListener("blur", this.pause);
+		window.addEventListener("focus", this.resume);
+	}// pauseOnInactive
+
+	pause(){
+		cancelAnimationFrame(this.#next_frame);
+		clearTimeout(this.#throttle_timeout);
+	}// pause
+	resume(){
+		this.#last_tick = Date.now();
+		this.requestRender();
+	}// resume
 
 
 	/* INIT ENTITIES

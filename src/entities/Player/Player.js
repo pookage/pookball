@@ -167,8 +167,6 @@ export default class Player {
 		const x = this.#X * this.#GAME.UNIT;
 		const y = this.#Y * this.#GAME.UNIT;
 
-		console.log(this.#RADIUS)
-
 		const xOffset      = x - cursor_x; //(cursor_x + (this.#RADIUS * this.#GAME.UNIT));
 		const yOffset      = y - cursor_y;
 		const distance     = Math.hypot(xOffset, yOffset)
