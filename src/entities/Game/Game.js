@@ -11,7 +11,9 @@ export default class Game {
 	#CONTEXT          = null; // refernece to the canvas' API
 
 	// DEBUG CONTROLS
-	#THROTTLE            = 1000 / 90; // (ms) minimum time between frames
+	DEBUG                = true; // whether to show debug controls / visuals
+	#FPS_LOCK            = 90;   // maximum frames-per-seconds
+	#THROTTLE            = 1000 / this.#FPS_LOCK; // (ms) minimum time between frames
 	#DISABLE_SCROLL      = false;
 	#DISABLE_CURSOR_LOCK = true;
 	
@@ -154,7 +156,6 @@ export default class Game {
 			clientX, clientY,     // absolute position on window
 			movementX, movementY, // relative change since last event
 		} = event; // need absolute for player
-
 
 		this.CURSOR_X = offsetX;
 		this.CURSOR_Y = offsetY;

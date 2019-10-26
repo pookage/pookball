@@ -52,8 +52,6 @@ export default class Player {
 				y: this.#Y 
 			},
 			size: this.#RADIUS,
-			// offset: RADIUS * 1.5,
-			// thickness: RADIUS / 5
 		});
 
 		return [ directionIndicator ];
@@ -79,7 +77,7 @@ export default class Player {
 		});
 
 		// if the target is far enough away, move there
-		if(direction.distance > 0.5){
+		if(direction.distance > this.#RADIUS){
 
 			const moveX = ((direction.x * this.#SPEED)) * deltaTime;
 			const moveY = ((direction.y * this.#SPEED)) * deltaTime;
@@ -117,6 +115,20 @@ export default class Player {
 
 		// restore canvas rotation
 		this.rotate(context, -rotation);
+
+		// direction vector
+		if(this.#GAME.DEBUG){
+			context.beginPath();
+			context.strokeStyle = "#FF0000";
+			context.lineWidth = 1;
+			context.moveTo(x, y);
+			context.lineTo(
+				this.#GAME.CURSOR_X, 
+				this.#GAME.CURSOR_Y
+			);
+			context.stroke();
+			context.strokeStyle = "black";
+		}
 	}// render
 
 	rotate(context, radians){
@@ -155,7 +167,9 @@ export default class Player {
 		const x = this.#X * this.#GAME.UNIT;
 		const y = this.#Y * this.#GAME.UNIT;
 
-		const xOffset      = x - cursor_x;
+		console.log(this.#RADIUS)
+
+		const xOffset      = x - cursor_x; //(cursor_x + (this.#RADIUS * this.#GAME.UNIT));
 		const yOffset      = y - cursor_y;
 		const distance     = Math.hypot(xOffset, yOffset)
 		const xNormal      = -(xOffset / distance);
@@ -167,8 +181,6 @@ export default class Player {
 			y: yNormal,
 			distance: distanceUnit,
 		};
-
-		console.log(distanceUnit)
 
 		return vector;
 	}// calculateDirectionFromCursor
