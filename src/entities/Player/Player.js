@@ -1,5 +1,6 @@
 import DirectionIndicator from "ENTITIES/DirectionIndicator/";
 import ProximityIndicator from "ENTITIES/ProximityIndicator/";
+import { easeInOut } from "SHARED/utils.js";
 
 export default class Player {
 
@@ -8,8 +9,10 @@ export default class Player {
 	#SIZE = 1;
 
 	#SPEED_THRESHOLD__WALK = 2;
-	#SPEED_THRESHOLD__JOG  = 5;
+	#SPEED_THRESHOLD__JOG  = 7;
 
+	#ACCELERATION = 0.15;
+	#DECELLERATION = 0.075;
 	#SPEED__WALK = 2;
 	#SPEED__JOG  = 4;
 	#SPEED__RUN  = 6;
@@ -20,6 +23,8 @@ export default class Player {
 	#CHILDREN;
 
 	ACTIVE = true;
+
+	#speed = 0;
 
 
 	constructor(config){
@@ -101,7 +106,8 @@ export default class Player {
 			y: this.#GAME.CURSOR_Y
 		});
 
-		const speed = this.calculateSpeedFromDistance(direction.distance);
+		const targetSpeed = this.calculateSpeedFromDistance(direction.distance);
+		const speed = this.#speed = easeInOut(this.#speed, targetSpeed, this.#ACCELERATION, this.#DECELLERATION);
 		const moveX = ((direction.x * speed)) * deltaTime;
 		const moveY = ((direction.y * speed)) * deltaTime;
 
@@ -189,7 +195,7 @@ export default class Player {
 		const x = this.X * this.#GAME.UNIT;
 		const y = this.Y * this.#GAME.UNIT;
 
-		const xOffset      = x - cursor_x; //(cursor_x + (this.#RADIUS * this.#GAME.UNIT));
+		const xOffset      = x - cursor_x;
 		const yOffset      = y - cursor_y;
 		const distance     = Math.hypot(xOffset, yOffset)
 		const xNormal      = -(xOffset / distance);

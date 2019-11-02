@@ -52,3 +52,15 @@ export function calculateScroll({ x, y }, canvas, speed, deltaTime){
 
 	return nextScroll;
 }// scrollCanvas
+
+export function easeInOut(current, target, accelleration, decelleration){
+
+	//NOTE : by doing decelleration-first we get that neat little bouncing thing
+	if(target === 0){
+		return current - (decelleration * 10)
+	} else if(current > target){
+		return current - decelleration;
+	} else if (current < target) {
+		return current + accelleration;
+	} else return target;
+} // easeInOut
