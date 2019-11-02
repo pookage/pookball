@@ -3,8 +3,8 @@ import ProximityIndicator from "ENTITIES/ProximityIndicator/";
 
 export default class Player {
 
-	#X;
-	#Y;
+	X;
+	Y;
 	#SIZE = 1;
 
 	#SPEED_THRESHOLD__WALK = 2;
@@ -43,8 +43,8 @@ export default class Player {
 
 		// setup
 		// ------------------------
-		this.#X      = x;
-		this.#Y      = y;
+		this.X      = x;
+		this.Y      = y;
 		this.#GAME   = game;
 		this.#RADIUS = this.#SIZE / 2;
 		this.#CHILDREN = this.initChildren();
@@ -55,8 +55,8 @@ export default class Player {
 		const options = {
 			game: this.#GAME,
 			position: { 
-				x: this.#X, 
-				y: this.#Y 
+				x: this.X, 
+				y: this.Y 
 			}
 		};
 		const directionIndicator = new DirectionIndicator({
@@ -105,12 +105,12 @@ export default class Player {
 		const moveX = ((direction.x * speed)) * deltaTime;
 		const moveY = ((direction.y * speed)) * deltaTime;
 
-		this.#X = this.#X + moveX
-		this.#Y = this.#Y + moveY
+		this.X = this.X + moveX
+		this.Y = this.Y + moveY
 
 		// convert position to pixels for rendering
-		const x = this.#X * this.#GAME.UNIT;
-		const y = this.#Y * this.#GAME.UNIT;
+		const x = this.X * this.#GAME.UNIT;
+		const y = this.Y * this.#GAME.UNIT;
 
 
 		// DRAW
@@ -131,7 +131,7 @@ export default class Player {
 		// UPDATE CHILDREN
 		// ---------------------
 		for(let child of this.#CHILDREN){
-			child.updatePosition({ x: this.#X, y: this.#Y });
+			child.updatePosition({ x: this.X, y: this.Y });
 			child.render(context, deltaTime);
 		}
 
@@ -154,8 +154,8 @@ export default class Player {
 	}// render
 
 	rotate(context, radians){
-		const x = this.#X * this.#GAME.UNIT;
-		const y = this.#Y * this.#GAME.UNIT;
+		const x = this.X * this.#GAME.UNIT;
+		const y = this.Y * this.#GAME.UNIT;
 
 		context.translate(x, y)
 		context.rotate(radians);
@@ -169,8 +169,8 @@ export default class Player {
 			y: cursor_y = 0 
 		} = cursor;
 
-		const x = this.#X * this.#GAME.UNIT;
-		const y = this.#Y * this.#GAME.UNIT;
+		const x = this.X * this.#GAME.UNIT;
+		const y = this.Y * this.#GAME.UNIT;
 
 		const dx    = cursor_x - x;
 		const dy    = cursor_y - y;
@@ -186,8 +186,8 @@ export default class Player {
 			y: cursor_y = 0 
 		} = cursor;
 
-		const x = this.#X * this.#GAME.UNIT;
-		const y = this.#Y * this.#GAME.UNIT;
+		const x = this.X * this.#GAME.UNIT;
+		const y = this.Y * this.#GAME.UNIT;
 
 		const xOffset      = x - cursor_x; //(cursor_x + (this.#RADIUS * this.#GAME.UNIT));
 		const yOffset      = y - cursor_y;
