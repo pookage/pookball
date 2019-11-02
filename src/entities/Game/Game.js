@@ -30,10 +30,10 @@ export default class Game {
 	#ENTITIES         = [];         // nested tree of every entity in the game
 	#last_tick        = Date.now(); // time of previous tick
 	#SCROLL_SPEED     = 200;        // speed at which to scroll the window
-	CURSOR_X;        // last known absolute x position of the cursor
-	CURSOR_Y;        // last known absolute y position of the cursor
-	WINDOW_X;        // last known relative x position of the cursor
-	WINDOW_Y;        // last known relative y position of the cursor
+	CURSOR_X = 0;        // last known absolute x position of the cursor
+	CURSOR_Y = 0;        // last known absolute y position of the cursor
+	WINDOW_X = 0;        // last known relative x position of the cursor
+	WINDOW_Y = 0;        // last known relative y position of the cursor
 	UNIT;            // the number of pixels per meter
 	#width;          // pixel width of canvas
 	#height;         // pixel height of canvas
@@ -218,13 +218,23 @@ export default class Game {
 			widthPx, heightPx
 		);
 
+		if(!this.#DISABLE_SCROLL){
+			// scroll window
+			window.scrollTo(scroll.x, scroll.y);
+
+			// update cursor if page has scrolled
+			this.CURSOR_X += scroll.stepX;
+			this.CURSOR_Y += scroll.stepY;
+			this.WINDOW_X += scroll.stepX;
+			this.WINDOW_Y += scroll.stepY;
+		}
+
 		// render every entity in the game scene
 		for(let entity of this.#ENTITIES){
 			entity.render(this.#CONTEXT, deltaTime);
 		}
 
 		// update scroll of container
-		if(!this.#DISABLE_SCROLL) window.scrollTo(scroll.x, scroll.y);
 
 		// queue up timeout
 		this.#throttle_timeout = setTimeout(this.requestRender, this.#THROTTLE);

@@ -24,26 +24,30 @@ export function calculateScroll({ x, y }, canvas, speed, deltaTime){
 	const canScrollRight = (clientWidth - scrollX - innerWidth) > 0;
 	const canScrollUp = scrollY > 0;
 	const canScrollDown = (clientHeight - scrollY - innerHeight) > 0;
- 
-	// console.log({ scrollUp, y, hitbox });
-
 
 	const scrollStep = speed * deltaTime;
 
 	const nextScroll = {
 		y: scrollY,
-		x: scrollX
-	}
+		x: scrollX,
+		stepX: 0,
+		stepY: 0
+	};
+
 	if(scrollLeft && canScrollLeft){
-		nextScroll.x -= scrollStep;
+		nextScroll.x -= scrollStep;     // x offset to scroll to
+		nextScroll.stepX = -scrollStep; // amount that has been scrolled
 	} else if (scrollRight && canScrollRight) {
 		nextScroll.x += scrollStep;
+		nextScroll.stepX = scrollStep;
 	}
 
 	if(scrollUp && canScrollUp){
 		nextScroll.y -= scrollStep;
+		nextScroll.stepY = -scrollStep;
 	} else if (scrollDown && canScrollDown) {
 		nextScroll.y += scrollStep;
+		nextScroll.stepY = scrollStep;
 	}
 
 	return nextScroll;

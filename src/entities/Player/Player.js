@@ -74,16 +74,11 @@ export default class Player {
 			radius: this.#SPEED_THRESHOLD__JOG
 		});
 
-		const far = new ProximityIndicator({
-			...options,
-			radius: this.#SPEED_THRESHOLD__JOG * 2
-		});
 
 		return [
 			directionIndicator,
 			close,
-			near,
-			far
+			near
 		];
 	}// initChildren
 
