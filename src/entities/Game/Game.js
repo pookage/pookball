@@ -234,8 +234,6 @@ export default class Game {
 			entity.render(this.#CONTEXT, deltaTime);
 		}
 
-		// update scroll of container
-
 		// queue up timeout
 		this.#throttle_timeout = setTimeout(this.requestRender, this.#THROTTLE);
 
