@@ -11,8 +11,10 @@ export default class Game {
 	#CONTEXT          = null; // refernece to the canvas' API
 
 	// DEBUG CONTROLS
-	#THROTTLE            = 1000 / 90; // (ms) minimum time between frames
-	#DISABLE_SCROLL      = true;
+	DEBUG                = true; // whether to show debug controls / visuals
+	#FPS_LOCK            = 90;   // maximum frames-per-seconds
+	#THROTTLE            = 1000 / this.#FPS_LOCK; // (ms) minimum time between frames
+	#DISABLE_SCROLL      = false;
 	#DISABLE_CURSOR_LOCK = true;
 	
 	// PITCH DIMENSIONS
@@ -22,15 +24,17 @@ export default class Game {
 
 	// CACHED VALUES
 	// ----------------------------
+	DEGREES_360       = Math.PI * 2;
 	#throttle_timeout = null;       // reference to the setTimeout that is throttling the render
 	#next_frame       = null;       // refernece to the next requestAnimationFrame
 	#ENTITIES         = [];         // nested tree of every entity in the game
 	#last_tick        = Date.now(); // time of previous tick
-	#SCROLL_SPEED     = 500;        // speed at which to scroll the window
-	CURSOR_X;        // last known absolute x position of the cursor
-	CURSOR_Y;        // last known absolute y position of the cursor
-	WINDOW_X;        // last known relative x position of the cursor
-	WINDOW_Y;        // last known relative y position of the cursor
+	#SCROLL_SPEED     = 400;        // speed at which to scroll the window
+	CURSOR_X;          // last known absolute x position of the cursor
+	CURSOR_Y;          // last known absolute y position of the cursor
+	WINDOW_X;          // last known relative x position of the cursor
+	WINDOW_Y;          // last known relative y position of the cursor
+	ACTIVE_PLAYER;
 	UNIT;            // the number of pixels per meter
 	#width;          // pixel width of canvas
 	#height;         // pixel height of canvas
@@ -51,6 +55,11 @@ export default class Game {
 		this.requestCursorUpdate = this.requestCursorUpdate.bind(this);
 		this.updateUnitOnResize = this.updateUnitOnResize.bind(this);
 		this.constrainCursor = this.constrainCursor.bind(this);
+		this.pauseOnInactive = this.pauseOnInactive.bind(this);
+		this.pause = this.pause.bind(this);
+		this.resume = this.resume.bind(this);
+		this.centerOnActive = this.centerOnActive.bind(this);
+		this.attachKeyboardControls = this.attachKeyboardControls.bind(this);
 
 
 		// setup
@@ -63,8 +72,13 @@ export default class Game {
 
 		// begin
 		// --------------------
+		this.attachKeyboardControls();
 		this.updateUnitOnResize();
+		this.pauseOnInactive();
 		this.render();
+		this.pause();
+
+		setTimeout(this.centerOnActive, 0);
 	}// constructor
 
 	updateUnit({ innerWidth, innerHeight }){
@@ -88,10 +102,48 @@ export default class Game {
 		return this.#CANVAS;
 	}// getCanvas
 
+	attachKeyboardControls(){
+
+		const parseKeyUp = ({ code }) => {
+			switch(code){
+				case "Space":
+					if(this.#next_frame) this.pause();
+					else                 this.resume();
+					break;
+			}
+		}// parseKeyUp
+
+		window.addEventListener("keyup", parseKeyUp);
+	}// attachKeyboardControls
+
 	updateUnitOnResize(){
 
 		window.addEventListener("resize", this.updateUnit);
 	}// updateUnitOnResize
+
+	pauseOnInactive(){
+		window.addEventListener("blur", this.pause);
+		// window.addEventListener("focus", this.resume);
+	}// pauseOnInactive
+
+	centerOnActive(){
+		const { X, Y } = this.ACTIVE_PLAYER;
+		const { innerWidth, innerHeight } = window;
+		const x = (X * this.UNIT) - (innerWidth / 2);
+		const y = (Y * this.UNIT) - (innerHeight / 2);
+
+		window.scrollTo(x, y);
+	}// centerOnActive
+
+	pause(){
+		cancelAnimationFrame(this.#next_frame);
+		clearTimeout(this.#throttle_timeout);
+		this.#next_frame = null;
+	}// pause
+	resume(){
+		this.#last_tick = Date.now();
+		this.requestRender();
+	}// resume
 
 
 	/* INIT ENTITIES
@@ -124,11 +176,11 @@ export default class Game {
 			}
 		});
 
-		const player = new Player({
+		const player = this.ACTIVE_PLAYER = new Player({
 			game: this,
 			position: {
 				x: this.#WIDTH / 2,
-				y: 5
+				y: 9
 			}
 		});
 
@@ -154,7 +206,6 @@ export default class Game {
 			clientX, clientY,     // absolute position on window
 			movementX, movementY, // relative change since last event
 		} = event; // need absolute for player
-
 
 		this.CURSOR_X = offsetX;
 		this.CURSOR_Y = offsetY;
@@ -198,13 +249,23 @@ export default class Game {
 			widthPx, heightPx
 		);
 
-		// render every entity in the game scene
-		for(let entity of this.#ENTITIES){
-			entity.render(this.#CONTEXT);
+		if(!this.#DISABLE_SCROLL){
+			// scroll window
+			window.scrollTo(scroll.x, scroll.y);
+
+			// keep cursor position in sync with window scroll
+			if(this.CURSOR_X && this.CURSOR_Y){
+				this.CURSOR_X += scroll.stepX;
+				this.CURSOR_Y += scroll.stepY;
+				this.WINDOW_X += scroll.stepX;
+				this.WINDOW_Y += scroll.stepY;
+			}
 		}
 
-		// update scroll of container
-		if(!this.#DISABLE_SCROLL) window.scrollTo(scroll.x, scroll.y);
+		// render every entity in the game scene
+		for(let entity of this.#ENTITIES){
+			entity.render(this.#CONTEXT, deltaTime);
+		}
 
 		// queue up timeout
 		this.#throttle_timeout = setTimeout(this.requestRender, this.#THROTTLE);

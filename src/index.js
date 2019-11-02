@@ -9,6 +9,10 @@ import "SHARED/global.scss";
 
 window.addEventListener("DOMContentLoaded", init);
 
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual';
+}
+
 function init(){
 
 	const config = {

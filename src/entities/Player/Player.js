@@ -1,16 +1,31 @@
 import DirectionIndicator from "ENTITIES/DirectionIndicator/";
+import ProximityIndicator from "ENTITIES/ProximityIndicator/";
+import { easeInOut } from "SHARED/utils.js";
 
 export default class Player {
 
-	#X;
-	#Y;
+	X;
+	Y;
 	#SIZE = 1;
+
+	#SPEED_THRESHOLD__WALK = 2;
+	#SPEED_THRESHOLD__JOG  = 7;
+
+	#ACCELERATION = 0.1;
+	#DECELLERATION = 0.075;
+	#SPEED__WALK = 2;
+	#SPEED__JOG  = 4;
+	#SPEED__RUN  = 8;
 	#GAME;
 	#RADIUS;
-	#DEGREES_360 = Math.PI * 2;
 	#CURSOR_X;
 	#CURSOR_Y;
 	#CHILDREN;
+
+	ACTIVE = true;
+
+	speed = 0;
+
 
 	constructor(config){
 
@@ -27,12 +42,14 @@ export default class Player {
 		this.render = this.render.bind(this);
 		this.rotate = this.rotate.bind(this);
 		this.initChildren = this.initChildren.bind(this);
-		this.calculateRotationFromCursor = this.calculateRotationFromCursor.bind(this);
+		this.calculateRotationFromCursor  = this.calculateRotationFromCursor.bind(this);
+		this.calculateDirectionFromCursor = this.calculateDirectionFromCursor.bind(this);
+		this.calculateSpeedFromDistance   = this.calculateSpeedFromDistance.bind(this);
 
 		// setup
 		// ------------------------
-		this.#X      = x;
-		this.#Y      = y;
+		this.X      = x;
+		this.Y      = y;
 		this.#GAME   = game;
 		this.#RADIUS = this.#SIZE / 2;
 		this.#CHILDREN = this.initChildren();
@@ -40,30 +57,89 @@ export default class Player {
 	
 	initChildren(){
 
-		const directionIndicator = new DirectionIndicator({
+		const options = {
 			game: this.#GAME,
 			position: { 
-				x: this.#X, 
-				y: this.#Y 
-			},
+				x: this.X, 
+				y: this.Y 
+			}
+		};
+		const walk = new DirectionIndicator({
+			...options,
 			size: this.#RADIUS,
-			// offset: RADIUS * 1.5,
-			// thickness: RADIUS / 5
+			parent: this,
+			offset: 0,
+			threshold: 0,
+		});
+		const jog = new DirectionIndicator({
+			...options,
+			size: this.#RADIUS,
+			parent: this,
+			offset: 0.2,
+			threshold: this.#SPEED__WALK,
+		});
+		const run = new DirectionIndicator({
+			...options,
+			size: this.#RADIUS,
+			parent: this,
+			offset: 0.4,
+			threshold: this.#SPEED__JOG
 		});
 
-		return [ directionIndicator ];
+		const close = new ProximityIndicator({
+			...options,
+			radius: this.#SPEED_THRESHOLD__WALK
+		});
+
+		const near = new ProximityIndicator({
+			...options,
+			radius: this.#SPEED_THRESHOLD__JOG
+		});
+
+
+		return [
+			walk,
+			jog,
+			run,
+			close,
+			near
+		];
 	}// initChildren
 
-	render(context){
-		const x = this.#X * this.#GAME.UNIT;
-		const y = this.#Y * this.#GAME.UNIT;
+	render(context, deltaTime){
 		const radius = this.#RADIUS * this.#GAME.UNIT;
 
+		// ROTATION
+		// ----------------------
+		// calculate rotation of the player
 		const rotation = this.calculateRotationFromCursor({
 			x: this.#GAME.CURSOR_X,
 			y: this.#GAME.CURSOR_Y
 		});
 
+		// MOVEMENT
+		// -----------------------
+		// calculate direction vector
+		const direction = this.calculateDirectionFromCursor({
+			x: this.#GAME.CURSOR_X,
+			y: this.#GAME.CURSOR_Y
+		});
+
+		const targetSpeed = this.calculateSpeedFromDistance(direction.distance);
+		const speed = this.speed = easeInOut(this.speed, targetSpeed, this.#ACCELERATION, this.#DECELLERATION);
+		const moveX = ((direction.x * speed)) * deltaTime;
+		const moveY = ((direction.y * speed)) * deltaTime;
+
+		this.X = this.X + moveX
+		this.Y = this.Y + moveY
+
+		// convert position to pixels for rendering
+		const x = this.X * this.#GAME.UNIT;
+		const y = this.Y * this.#GAME.UNIT;
+
+
+		// DRAW
+		// -------------------
 		context.fillStyle = "black";
 
 		this.rotate(context, rotation);
@@ -73,20 +149,38 @@ export default class Player {
 			x, y,
 			radius,
 			0,
-			this.#DEGREES_360
+			this.#GAME.DEGREES_360
 		);
 		context.fill();
 
+		// UPDATE CHILDREN
+		// ---------------------
 		for(let child of this.#CHILDREN){
-			child.render(context);
+			child.updatePosition({ x: this.X, y: this.Y });
+			child.render(context, deltaTime);
 		}
 
+		// restore canvas rotation
 		this.rotate(context, -rotation);
+
+		// direction vector
+		if(this.#GAME.DEBUG){
+			context.beginPath();
+			context.strokeStyle = "#FF0000";
+			context.lineWidth = 1;
+			context.moveTo(x, y);
+			context.lineTo(
+				this.#GAME.CURSOR_X, 
+				this.#GAME.CURSOR_Y
+			);
+			context.stroke();
+			context.strokeStyle = "black";
+		}
 	}// render
 
 	rotate(context, radians){
-		const x = this.#X * this.#GAME.UNIT;
-		const y = this.#Y * this.#GAME.UNIT;
+		const x = this.X * this.#GAME.UNIT;
+		const y = this.Y * this.#GAME.UNIT;
 
 		context.translate(x, y)
 		context.rotate(radians);
@@ -100,8 +194,8 @@ export default class Player {
 			y: cursor_y = 0 
 		} = cursor;
 
-		const x = this.#X * this.#GAME.UNIT;
-		const y = this.#Y * this.#GAME.UNIT;
+		const x = this.X * this.#GAME.UNIT;
+		const y = this.Y * this.#GAME.UNIT;
 
 		const dx    = cursor_x - x;
 		const dy    = cursor_y - y;
@@ -109,5 +203,44 @@ export default class Player {
 
 		return angle;
 	}// calculateRotationFromCursor
+
+	calculateDirectionFromCursor(cursor){
+
+		const { 
+			x: cursor_x = 0, 
+			y: cursor_y = 0 
+		} = cursor;
+
+		const x = this.X * this.#GAME.UNIT;
+		const y = this.Y * this.#GAME.UNIT;
+
+		const xOffset      = x - cursor_x;
+		const yOffset      = y - cursor_y;
+		const distance     = Math.hypot(xOffset, yOffset)
+		const xNormal      = -(xOffset / distance);
+		const yNormal      = -(yOffset / distance);
+		const distanceUnit = distance / this.#GAME.UNIT;
+
+		const vector = {
+			x: xNormal,
+			y: yNormal,
+			distance: distanceUnit,
+		};
+
+		return vector;
+	}// calculateDirectionFromCursor
+
+	calculateSpeedFromDistance(distance){
+
+		const on    = distance < this.#RADIUS;
+		const close = distance < this.#SPEED_THRESHOLD__WALK;
+		const near  = distance < this.#SPEED_THRESHOLD__JOG;
+		const far   = distance >= this.#SPEED_THRESHOLD__JOG;
+
+		if(on)         return 0;
+		else if(close) return this.#SPEED__WALK;
+		else if(near)  return this.#SPEED__JOG;
+		else if(far)   return this.#SPEED__RUN;
+	}// distance
 
 }// Player
