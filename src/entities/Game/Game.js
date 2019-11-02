@@ -29,7 +29,7 @@ export default class Game {
 	#next_frame       = null;       // refernece to the next requestAnimationFrame
 	#ENTITIES         = [];         // nested tree of every entity in the game
 	#last_tick        = Date.now(); // time of previous tick
-	#SCROLL_SPEED     = 200;        // speed at which to scroll the window
+	#SCROLL_SPEED     = 400;        // speed at which to scroll the window
 	CURSOR_X;          // last known absolute x position of the cursor
 	CURSOR_Y;          // last known absolute y position of the cursor
 	WINDOW_X;          // last known relative x position of the cursor

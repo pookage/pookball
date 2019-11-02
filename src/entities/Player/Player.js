@@ -11,11 +11,11 @@ export default class Player {
 	#SPEED_THRESHOLD__WALK = 2;
 	#SPEED_THRESHOLD__JOG  = 7;
 
-	#ACCELERATION = 0.15;
+	#ACCELERATION = 0.1;
 	#DECELLERATION = 0.075;
 	#SPEED__WALK = 2;
 	#SPEED__JOG  = 4;
-	#SPEED__RUN  = 6;
+	#SPEED__RUN  = 8;
 	#GAME;
 	#RADIUS;
 	#CURSOR_X;
@@ -24,7 +24,7 @@ export default class Player {
 
 	ACTIVE = true;
 
-	#speed = 0;
+	speed = 0;
 
 
 	constructor(config){
@@ -64,9 +64,26 @@ export default class Player {
 				y: this.Y 
 			}
 		};
-		const directionIndicator = new DirectionIndicator({
+		const walk = new DirectionIndicator({
 			...options,
 			size: this.#RADIUS,
+			parent: this,
+			offset: 0,
+			threshold: 0,
+		});
+		const jog = new DirectionIndicator({
+			...options,
+			size: this.#RADIUS,
+			parent: this,
+			offset: 0.2,
+			threshold: this.#SPEED__WALK,
+		});
+		const run = new DirectionIndicator({
+			...options,
+			size: this.#RADIUS,
+			parent: this,
+			offset: 0.4,
+			threshold: this.#SPEED__JOG
 		});
 
 		const close = new ProximityIndicator({
@@ -81,7 +98,9 @@ export default class Player {
 
 
 		return [
-			directionIndicator,
+			walk,
+			jog,
+			run,
 			close,
 			near
 		];
@@ -107,7 +126,7 @@ export default class Player {
 		});
 
 		const targetSpeed = this.calculateSpeedFromDistance(direction.distance);
-		const speed = this.#speed = easeInOut(this.#speed, targetSpeed, this.#ACCELERATION, this.#DECELLERATION);
+		const speed = this.speed = easeInOut(this.speed, targetSpeed, this.#ACCELERATION, this.#DECELLERATION);
 		const moveX = ((direction.x * speed)) * deltaTime;
 		const moveY = ((direction.y * speed)) * deltaTime;
 
