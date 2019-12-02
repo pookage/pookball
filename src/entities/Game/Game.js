@@ -190,7 +190,7 @@ export default class Game {
 			game: this,
 			position: {
 				x: this.#WIDTH / 2,
-				y: this.#HEIGHT / 2
+				y: 15
 			}
 		});
 

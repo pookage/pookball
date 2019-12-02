@@ -64,3 +64,34 @@ export function easeInOut(current, target, accelleration, decelleration){
 		return current + accelleration;
 	} else return target;
 } // easeInOut
+
+export function checkCollision(a, b, GAME){
+
+	const { 
+		X: aPosX,
+		Y: aPosY,
+		HEIGHT: aHeightAbs,
+		WIDTH: aWidthAbs,
+		RADIUS: aRadius,
+	} = a;
+
+	const {
+		X: bPosX,
+		Y: bPosY,
+		HEIGHT: bHeightAbs,
+		WIDTH: bWidthAbs,
+		RADIUS: bRadius
+	} = b;
+
+	const aHeight = aHeightAbs || aRadius;
+	const aWidth  = aWidthAbs || aRadius;
+
+	const bHeight = bHeightAbs || bRadius;
+	const bWidth  = bWidthAbs || bRadius;
+
+	const horizontalIntersection = aPosX < (bPosX + bWidth) && bPosX < (aPosX + aWidth);
+	const verticalIntersection   = aPosY < (bPosY + bHeight) && bPosY < (aPosY + aHeight);
+
+	if(horizontalIntersection && verticalIntersection) return true;
+	else                                               return false;
+}// checkCollision

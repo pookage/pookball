@@ -1,12 +1,18 @@
 export default class Ball {
 
-	#X;
-	#Y;
-	#RADIUS;
+
+	X;
+	Y;
+	#direction
+	#speed;
+
+	// constants
+	RADIUS;
 	#GAME;
 
 	// defaults
 	#SIZE = 0.5;
+
 
 	constructor(config){
 		const {
@@ -24,17 +30,17 @@ export default class Ball {
 
 		// setup
 		// ---------------------
-		this.#X    = x;
-		this.#Y    = y;
+		this.X    = x;
+		this.Y    = y;
 		this.#GAME = game;
-		this.#RADIUS = size / 2;
+		this.RADIUS = size / 2;
 	}// constructor
 
 	render(context, deltaTime){
 
-		const x      = this.#X * this.#GAME.UNIT;
-		const y      = this.#Y * this.#GAME.UNIT;
-		const radius = this.#RADIUS * this.#GAME.UNIT;
+		const x      = this.X * this.#GAME.UNIT;
+		const y      = this.Y * this.#GAME.UNIT;
+		const radius = this.RADIUS * this.#GAME.UNIT;
 
 		// DRAW
 		// -------------------------
@@ -52,8 +58,8 @@ export default class Ball {
 	}// render
 
 	updatePosition({ x, y }){
-		this.#X = x;
-		this.#Y = y;
+		this.X = x;
+		this.X = y;
 	}// updatePosition
 
 }// Ball
