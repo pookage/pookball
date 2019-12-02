@@ -1,6 +1,7 @@
 import Guide from "ENTITIES/Guide/";
 import Goal from "ENTITIES/Goal/";
 import Player from "ENTITIES/Player/";
+import Ball from "ENTITIES/Ball/";
 import { debounce, calculateScroll } from "SHARED/utils.js";
 
 export default class Game {
@@ -35,6 +36,7 @@ export default class Game {
 	WINDOW_X;          // last known relative x position of the cursor
 	WINDOW_Y;          // last known relative y position of the cursor
 	ACTIVE_PLAYER;
+	BALL;
 	UNIT;            // the number of pixels per meter
 	#width;          // pixel width of canvas
 	#height;         // pixel height of canvas
@@ -184,11 +186,20 @@ export default class Game {
 			}
 		});
 
+		const ball = this.BALL = new Ball({
+			game: this,
+			position: {
+				x: this.#WIDTH / 2,
+				y: this.#HEIGHT / 2
+			}
+		});
+
 		return ([
 			centerYGuide,
 			centerXGuide,
 			goal,
-			player
+			player,
+			ball
 		]);
 	}// initEntities
 

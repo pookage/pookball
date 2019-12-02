@@ -22,9 +22,11 @@ export default class Player {
 	#CURSOR_Y;
 	#CHILDREN;
 
+
 	ACTIVE = true;
 
-	speed = 0;
+	direction = { x: 0, y: 0 }; // current movement direction vector
+	speed     = 0;
 
 
 	constructor(config){
@@ -120,7 +122,7 @@ export default class Player {
 		// MOVEMENT
 		// -----------------------
 		// calculate direction vector
-		const direction = this.calculateDirectionFromCursor({
+		const direction = this.direction = this.calculateDirectionFromCursor({
 			x: this.#GAME.CURSOR_X,
 			y: this.#GAME.CURSOR_Y
 		});
