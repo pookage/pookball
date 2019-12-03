@@ -13,7 +13,7 @@ export default class Game {
 
 	// DEBUG CONTROLS
 	DEBUG                = true; // whether to show debug controls / visuals
-	#FPS_LOCK            = 90;   // maximum frames-per-seconds
+	#FPS_LOCK            = 10;   // maximum frames-per-seconds
 	#THROTTLE            = 1000 / this.#FPS_LOCK; // (ms) minimum time between frames
 	#DISABLE_SCROLL      = false;
 	#DISABLE_CURSOR_LOCK = true;
@@ -190,7 +190,7 @@ export default class Game {
 			game: this,
 			position: {
 				x: this.#WIDTH / 2,
-				y: 15
+				y: 10
 			}
 		});
 

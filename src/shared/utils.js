@@ -65,7 +65,7 @@ export function easeInOut(current, target, accelleration, decelleration){
 	} else return target;
 } // easeInOut
 
-export function checkCollision(a, b, GAME){
+export function getCollisionVector(a, b, GAME){
 
 	const { 
 		X: aPosX,
@@ -92,6 +92,8 @@ export function checkCollision(a, b, GAME){
 	const horizontalIntersection = aPosX < (bPosX + bWidth) && bPosX < (aPosX + aWidth);
 	const verticalIntersection   = aPosY < (bPosY + bHeight) && bPosY < (aPosY + aHeight);
 
+	// console.log({ horizontalIntersection, verticalIntersection })
+
 	if(horizontalIntersection && verticalIntersection) return true;
 	else                                               return false;
-}// checkCollision
+}// getCollisionVector

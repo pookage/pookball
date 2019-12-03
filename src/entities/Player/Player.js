@@ -1,23 +1,23 @@
 import DirectionIndicator from "ENTITIES/DirectionIndicator/";
 import ProximityIndicator from "ENTITIES/ProximityIndicator/";
-import { easeInOut } from "SHARED/utils.js";
+import { easeInOut, getCollisionVector } from "SHARED/utils.js";
 
 export default class Player {
 
 	X;
 	Y;
-	#SIZE = 1;
+	RADIUS;
 
 	#SPEED_THRESHOLD__WALK = 2;
 	#SPEED_THRESHOLD__JOG  = 7;
 
+	#SIZE = 1;
 	#ACCELERATION = 0.1;
 	#DECELLERATION = 0.075;
 	#SPEED__WALK = 2;
 	#SPEED__JOG  = 4;
 	#SPEED__RUN  = 8;
-	#GAME;
-	#RADIUS;
+	#GAME;	
 	#CURSOR_X;
 	#CURSOR_Y;
 	#CHILDREN;
@@ -53,7 +53,7 @@ export default class Player {
 		this.X      = x;
 		this.Y      = y;
 		this.#GAME   = game;
-		this.#RADIUS = this.#SIZE / 2;
+		this.RADIUS = this.#SIZE / 2;
 		this.#CHILDREN = this.initChildren();
 	}// constructor
 	
@@ -68,21 +68,21 @@ export default class Player {
 		};
 		const walk = new DirectionIndicator({
 			...options,
-			size: this.#RADIUS,
+			size: this.RADIUS,
 			parent: this,
 			offset: 0,
 			threshold: 0,
 		});
 		const jog = new DirectionIndicator({
 			...options,
-			size: this.#RADIUS,
+			size: this.RADIUS,
 			parent: this,
 			offset: 0.2,
 			threshold: this.#SPEED__WALK,
 		});
 		const run = new DirectionIndicator({
 			...options,
-			size: this.#RADIUS,
+			size: this.RADIUS,
 			parent: this,
 			offset: 0.4,
 			threshold: this.#SPEED__JOG
@@ -109,7 +109,7 @@ export default class Player {
 	}// initChildren
 
 	render(context, deltaTime){
-		const radius = this.#RADIUS * this.#GAME.UNIT;
+		const radius = this.RADIUS * this.#GAME.UNIT;
 
 		// ROTATION
 		// ----------------------
@@ -161,9 +161,16 @@ export default class Player {
 			child.updatePosition({ x: this.X, y: this.Y });
 			child.render(context, deltaTime);
 		}
+		// COLLISION EFFECTS
+		// ------------------------
+		const collision = getCollisionVector(this, this.#GAME.BALL);
+		if(collision){
+			console.log({ collision, player: this, ball: this.#GAME.BALL })
+		}
 
 		// restore canvas rotation
 		this.rotate(context, -rotation);
+
 
 		// direction vector
 		if(this.#GAME.DEBUG){
@@ -234,7 +241,7 @@ export default class Player {
 
 	calculateSpeedFromDistance(distance){
 
-		const on    = distance < this.#RADIUS;
+		const on    = distance < this.RADIUS;
 		const close = distance < this.#SPEED_THRESHOLD__WALK;
 		const near  = distance < this.#SPEED_THRESHOLD__JOG;
 		const far   = distance >= this.#SPEED_THRESHOLD__JOG;
