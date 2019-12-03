@@ -24,8 +24,6 @@ export default class Player {
 	#CURSOR_X;
 	#CURSOR_Y;
 	#CHILDREN;
-	#NEAR;
-
 
 	ACTIVE = true;
 
@@ -75,7 +73,7 @@ export default class Player {
 				y: this.Y 
 			}
 		};
-		const walk = this.#NEAR = new DirectionIndicator({
+		const walk = new DirectionIndicator({
 			...options,
 			size: this.RADIUS,
 			parent: this,
@@ -240,7 +238,7 @@ export default class Player {
 
 		const xOffset      = x - cursor_x;
 		const yOffset      = y - cursor_y;
-		const distance     = Math.hypot(xOffset, yOffset)
+		const distance     = Math.hypot(xOffset, yOffset);
 		const xNormal      = -(xOffset / distance);
 		const yNormal      = -(yOffset / distance);
 		const distanceUnit = distance / this.#GAME.UNIT;
@@ -276,10 +274,14 @@ export default class Player {
 
 	punt(){
 		if(this.ACTIVE){
+			const { X: ballX, Y: ballY } = this.#GAME.BALL;
+			const xOffset      = this.X - ballX;
+			const yOffset      = this.Y - ballY;
+			const distance     = Math.hypot(xOffset, yOffset)
 
-			const ballNear = true; // TODO - only allow this if ball is at feet
+			const ballNear = distance < this.#SPEED__WALK; // TODO - only allow this if ball is at feet
 			if(ballNear){
-				const scalar = Math.max(1 - (this.speed / this.#SPEED__RUN), 0.8);
+				const scalar = Math.max(1 - (this.speed / this.#SPEED__RUN), 0.4);
 				const power  = (this.#POWER__KICKING * this.speed) * scalar;
 				this.#GAME.BALL.kick(this.direction, power);
 			}
