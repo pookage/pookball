@@ -11,7 +11,7 @@ export default class Ball {
 	RADIUS;
 	#GAME;
 	#MULTIPLIER__SHORT = 2;
-	#MULTIPLIER__LONG  = 4;
+	#MULTIPLIER__LONG  = 2.5;
 
 	// defaults
 	#SIZE = 0.5;

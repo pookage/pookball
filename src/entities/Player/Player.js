@@ -24,6 +24,7 @@ export default class Player {
 	#CURSOR_X;
 	#CURSOR_Y;
 	#CHILDREN;
+	#NEAR;
 
 
 	ACTIVE = true;
@@ -50,14 +51,19 @@ export default class Player {
 		this.calculateRotationFromCursor  = this.calculateRotationFromCursor.bind(this);
 		this.calculateDirectionFromCursor = this.calculateDirectionFromCursor.bind(this);
 		this.calculateSpeedFromDistance   = this.calculateSpeedFromDistance.bind(this);
+		this.attachMouseControls          = this.attachMouseControls.bind(this);
+		this.punt                         = this.punt.bind(this);
+		this.dribble                      = this.dribble.bind(this);
 
 		// setup
 		// ------------------------
 		this.X      = x;
 		this.Y      = y;
-		this.#GAME   = game;
+		this.#GAME  = game;
 		this.RADIUS = this.#SIZE / 2;
 		this.#CHILDREN = this.initChildren();
+
+		this.attachMouseControls();
 	}// constructor
 	
 	initChildren(){
@@ -69,7 +75,7 @@ export default class Player {
 				y: this.Y 
 			}
 		};
-		const walk = new DirectionIndicator({
+		const walk = this.#NEAR = new DirectionIndicator({
 			...options,
 			size: this.RADIUS,
 			parent: this,
@@ -110,6 +116,11 @@ export default class Player {
 			near
 		];
 	}// initChildren
+
+	attachMouseControls(){
+		window.addEventListener("click", this.punt);
+	}// attachMouseControls
+
 
 	render(context, deltaTime){
 		const radius = this.RADIUS * this.#GAME.UNIT;
@@ -185,11 +196,9 @@ export default class Player {
 
 		// COLLISION EFFECTS
 		// ------------------------
-		const collision = getCollisionVector(this, this.#GAME.BALL);
-		if(collision){
-			const scalar = Math.max(1 - (this.speed / this.#SPEED__RUN), 0.8);
-			const power  = (this.#POWER__DRIBBLE * this.speed) * scalar;
-			this.#GAME.BALL.dribble(direction, power);
+		const ballCollision = getCollisionVector(this, this.#GAME.BALL);
+		if(ballCollision){
+			this.dribble();
 		}
 	}// render
 
@@ -257,5 +266,24 @@ export default class Player {
 		else if(near)  return this.#SPEED__JOG;
 		else if(far)   return this.#SPEED__RUN;
 	}// distance
+
+	dribble(){
+		const scalar = Math.max(1 - (this.speed / this.#SPEED__RUN), 0.8);
+		const power  = (this.#POWER__DRIBBLE * this.speed) * scalar;
+
+		this.#GAME.BALL.dribble(this.direction, power);
+	}
+
+	punt(){
+		if(this.ACTIVE){
+
+			const ballNear = true; // TODO - only allow this if ball is at feet
+			if(ballNear){
+				const scalar = Math.max(1 - (this.speed / this.#SPEED__RUN), 0.8);
+				const power  = (this.#POWER__KICKING * this.speed) * scalar;
+				this.#GAME.BALL.kick(this.direction, power);
+			}
+		}
+	}// punt
 
 }// Player

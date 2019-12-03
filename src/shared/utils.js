@@ -100,5 +100,6 @@ export function getCollisionVector(source, target, GAME){
 
 	const collision = horizontalIntersection && verticalIntersection;
 
-	if(collision) return direction;
+	if(collision) return (direction || true);
+	else return false;
 }// getCollisionVector
