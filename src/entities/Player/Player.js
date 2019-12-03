@@ -161,16 +161,16 @@ export default class Player {
 			child.updatePosition({ x: this.X, y: this.Y });
 			child.render(context, deltaTime);
 		}
+
+		// restore canvas rotation
+		this.rotate(context, -rotation);
+
 		// COLLISION EFFECTS
 		// ------------------------
 		const collision = getCollisionVector(this, this.#GAME.BALL);
 		if(collision){
 			console.log({ collision, player: this, ball: this.#GAME.BALL })
 		}
-
-		// restore canvas rotation
-		this.rotate(context, -rotation);
-
 
 		// direction vector
 		if(this.#GAME.DEBUG){

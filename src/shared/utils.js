@@ -65,32 +65,32 @@ export function easeInOut(current, target, accelleration, decelleration){
 	} else return target;
 } // easeInOut
 
-export function getCollisionVector(a, b, GAME){
+export function getCollisionVector(source, target, GAME){
 
 	const { 
-		X: aPosX,
-		Y: aPosY,
-		HEIGHT: aHeightAbs,
-		WIDTH: aWidthAbs,
-		RADIUS: aRadius,
-	} = a;
+		X: sourcePosX,
+		Y: sourcePosY,
+		HEIGHT: sourceHeightAbs,
+		WIDTH: sourceWidthAbs,
+		RADIUS: sourceRadius,
+	} = source;
 
 	const {
-		X: bPosX,
-		Y: bPosY,
-		HEIGHT: bHeightAbs,
-		WIDTH: bWidthAbs,
-		RADIUS: bRadius
-	} = b;
+		X: targetPosX,
+		Y: targetPosY,
+		HEIGHT: targetHeightAbs,
+		WIDTH: targetWidthAbs,
+		RADIUS: targetRadius
+	} = target;
 
-	const aHeight = aHeightAbs || aRadius;
-	const aWidth  = aWidthAbs || aRadius;
+	const sourceHeight = sourceHeightAbs || sourceRadius;
+	const sourceWidth  = sourceWidthAbs  || sourceRadius;
 
-	const bHeight = bHeightAbs || bRadius;
-	const bWidth  = bWidthAbs || bRadius;
+	const targetHeight = targetHeightAbs || targetRadius;
+	const targetWidth  = targetWidthAbs  || targetRadius;
 
-	const horizontalIntersection = aPosX < (bPosX + bWidth) && bPosX < (aPosX + aWidth);
-	const verticalIntersection   = aPosY < (bPosY + bHeight) && bPosY < (aPosY + aHeight);
+	const horizontalIntersection = sourcePosX < (targetPosX + targetWidth)  && targetPosX < (sourcePosX + sourceWidth);
+	const verticalIntersection   = sourcePosY < (targetPosY + targetHeight) && targetPosY < (sourcePosY + sourceHeight);
 
 	// console.log({ horizontalIntersection, verticalIntersection })
 
