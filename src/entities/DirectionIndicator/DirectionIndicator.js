@@ -1,8 +1,8 @@
 export default class DirectionIndicator {
 
-	#X;
-	#Y;
-	#RADIUS;
+	X;
+	Y;
+	RADIUS;
 	#HEIGHT;
 	#OFFSET;
 	#THICKNESS = 10;
@@ -25,9 +25,9 @@ export default class DirectionIndicator {
 
 		this.#GAME      = game;
 		this.#PARENT    = parent;
-		this.#X         = x;
-		this.#Y         = y;
-		this.#RADIUS    = size / 2;
+		this.X         = x;
+		this.Y         = y;
+		this.RADIUS    = size / 2;
 		this.#HEIGHT    = size / 2;
 		this.#THICKNESS = size / 5;
 		this.#OFFSET    = (size + this.#THICKNESS) + offset;
@@ -41,9 +41,9 @@ export default class DirectionIndicator {
 
 		if(Math.round(this.#PARENT.speed) > this.#THRESHOLD){
 			const thickness = this.#THICKNESS * this.#GAME.UNIT;
-			const x = this.#X * this.#GAME.UNIT;
-			const y = this.#Y * this.#GAME.UNIT;
-			const radius = this.#RADIUS * this.#GAME.UNIT;
+			const x = this.X * this.#GAME.UNIT;
+			const y = this.Y * this.#GAME.UNIT;
+			const radius = this.RADIUS * this.#GAME.UNIT;
 			const offset = this.#OFFSET * this.#GAME.UNIT;
 			const height = this.#HEIGHT * this.#GAME.UNIT;
 
@@ -68,7 +68,7 @@ export default class DirectionIndicator {
 	}// render
 
 	updatePosition({ x, y }){
-		this.#X = x;
-		this.#Y = y;
+		this.X = x;
+		this.Y = y;
 	}// updatePosition
 }

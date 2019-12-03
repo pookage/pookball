@@ -17,6 +17,9 @@ export default class Player {
 	#SPEED__WALK = 2;
 	#SPEED__JOG  = 4;
 	#SPEED__RUN  = 8;
+	#POWER__DRIBBLE = 1;
+	#POWER__KICKING = 1;
+
 	#GAME;	
 	#CURSOR_X;
 	#CURSOR_Y;
@@ -165,13 +168,6 @@ export default class Player {
 		// restore canvas rotation
 		this.rotate(context, -rotation);
 
-		// COLLISION EFFECTS
-		// ------------------------
-		const collision = getCollisionVector(this, this.#GAME.BALL);
-		if(collision){
-			console.log({ collision, player: this, ball: this.#GAME.BALL })
-		}
-
 		// direction vector
 		if(this.#GAME.DEBUG){
 			context.beginPath();
@@ -184,6 +180,16 @@ export default class Player {
 			);
 			context.stroke();
 			context.strokeStyle = "black";
+		}
+
+
+		// COLLISION EFFECTS
+		// ------------------------
+		const collision = getCollisionVector(this, this.#GAME.BALL);
+		if(collision){
+			const scalar = Math.max(1 - (this.speed / this.#SPEED__RUN), 0.8);
+			const power  = (this.#POWER__DRIBBLE * this.speed) * scalar;
+			this.#GAME.BALL.dribble(direction, power);
 		}
 	}// render
 

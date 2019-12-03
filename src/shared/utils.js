@@ -56,7 +56,7 @@ export function calculateScroll({ x, y }, canvas, speed, deltaTime){
 export function easeInOut(current, target, accelleration, decelleration){
 
 	//NOTE : by doing decelleration-first we get that neat little bouncing thing
-	if(target === 0){
+	if(target === 0 && current > 0){
 		return current - (decelleration * 2)
 	} else if(current > target){
 		return current - decelleration;
@@ -73,6 +73,7 @@ export function getCollisionVector(source, target, GAME){
 		HEIGHT: sourceHeightAbs,
 		WIDTH: sourceWidthAbs,
 		RADIUS: sourceRadius,
+		direction
 	} = source;
 
 	const {
@@ -89,11 +90,15 @@ export function getCollisionVector(source, target, GAME){
 	const targetHeight = targetHeightAbs || targetRadius;
 	const targetWidth  = targetWidthAbs  || targetRadius;
 
-	const horizontalIntersection = sourcePosX < (targetPosX + targetWidth)  && targetPosX < (sourcePosX + sourceWidth);
-	const verticalIntersection   = sourcePosY < (targetPosY + targetHeight) && targetPosY < (sourcePosY + sourceHeight);
+	const horizontalIntersection = 
+		sourcePosX < (targetPosX + targetWidth) && 
+		targetPosX < (sourcePosX + sourceWidth);
 
-	// console.log({ horizontalIntersection, verticalIntersection })
+	const verticalIntersection = 
+		sourcePosY < (targetPosY + targetHeight) &&
+		targetPosY < (sourcePosY + sourceHeight);
 
-	if(horizontalIntersection && verticalIntersection) return true;
-	else                                               return false;
+	const collision = horizontalIntersection && verticalIntersection;
+
+	if(collision) return direction;
 }// getCollisionVector
