@@ -1,5 +1,6 @@
 import DirectionIndicator from "ENTITIES/DirectionIndicator/";
 import ProximityIndicator from "ENTITIES/ProximityIndicator/";
+import PowerIndicator from "ENTITIES/PowerIndicator/";
 import { easeInOut, getCollisionVector } from "SHARED/utils.js";
 
 export default class Player {
@@ -18,13 +19,14 @@ export default class Player {
 	#SPEED__JOG  = 4;
 	#SPEED__RUN  = 8;
 	#POWER__DRIBBLE = 1;
-	#POWER__KICKING = 4;
+	#POWER__KICKING = 3;
 	#POWER__CHARGE_RATE = 1;
 
 	#GAME;	
 	#CURSOR_X;
 	#CURSOR_Y;
 	#CHILDREN;
+	#INDICATOR__POWER;
 
 	ACTIVE = true;
 
@@ -110,13 +112,18 @@ export default class Player {
 			radius: this.#SPEED_THRESHOLD__JOG
 		});
 
+		const power = this.#INDICATOR__POWER = new PowerIndicator({
+			...options,
+		})
+
 
 		return [
 			walk,
 			jog,
 			run,
 			close,
-			near
+			near,
+			power
 		];
 	}// initChildren
 
@@ -157,6 +164,17 @@ export default class Player {
 		const x = this.X * this.#GAME.UNIT;
 		const y = this.Y * this.#GAME.UNIT;
 
+		// POWER EFFECTS
+		// ------------------------
+		let power = this.#power;
+		if(this.#charging){
+			power = this.#power + (this.#POWER__CHARGE_RATE * deltaTime);
+			this.#power = Math.min(power, 1);
+		}
+		this.#INDICATOR__POWER.update(power)
+
+
+
 
 		// DRAW
 		// -------------------
@@ -195,14 +213,6 @@ export default class Player {
 			);
 			context.stroke();
 			context.strokeStyle = "black";
-		}
-
-
-		// EVENT EFFECTS
-		// ------------------------
-		if(this.#charging){
-			const power = this.#power + (this.#POWER__CHARGE_RATE * deltaTime);
-			this.#power = Math.min(power, 1);
 		}
 
 
