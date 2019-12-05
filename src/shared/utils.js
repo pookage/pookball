@@ -103,3 +103,18 @@ export function getCollisionVector(source, target, GAME){
 	if(collision) return (direction || true);
 	else return false;
 }// getCollisionVector
+
+export function checkOob(target, bounds){
+
+	const { x, y }          = target;
+	const { width, height } = bounds;
+
+	const tooFarLeft = x < 0;
+	const tooFarUp   = y < 0;
+	const tooFarRight = x > width;
+	const tooFarDown  = y > height;
+
+	const outOfBounds = tooFarUp || tooFarRight || tooFarDown || tooFarLeft;
+
+	return outOfBounds;
+}//checkOob

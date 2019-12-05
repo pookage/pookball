@@ -19,7 +19,7 @@ export default class Player {
 	#SPEED__JOG  = 4;
 	#SPEED__RUN  = 8;
 	#POWER__DRIBBLE = 1;
-	#POWER__KICKING = 3;
+	#POWER__KICKING = 4;
 	#POWER__CHARGE_RATE = 1;
 
 	#GAME;	
@@ -299,9 +299,6 @@ export default class Player {
 	}// dribble
 
 	punt(){
-
-		console.log(this.#power);
-
 		if(this.ACTIVE){
 			this.#charging = false;
 

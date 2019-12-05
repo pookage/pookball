@@ -1,4 +1,4 @@
-import { easeInOut } from "SHARED/utils.js";
+import { easeInOut, checkOob } from "SHARED/utils.js";
 
 export default class Ball {
 
@@ -6,6 +6,7 @@ export default class Ball {
 	Y;
 	direction = { x: 0, y: 0 }; // current direction vector of travel
 	#energy = 0;    // amount of distance the ball has left to travel
+	#recently_thrown = false;
 
 	// constants
 	RADIUS;
@@ -68,6 +69,28 @@ export default class Ball {
 			this.#GAME.DEGREES_360
 		);
 		context.fill();
+
+
+		// POST-DRAW UPDATE
+		// ------------------------
+		const oob = checkOob(
+			{ x: this.X, y: this.Y }, 
+			this.#GAME.getSize()
+		);
+
+		if(oob){
+			if(!this.#recently_thrown){
+				this.#recently_thrown = true;
+				const oppositeVector = this.direction = {
+					x: this.direction.x * -1,
+					y: this.direction.y * -1
+				};
+
+				this.kick(oppositeVector, 0.75);
+			}
+		} else {
+			this.#recently_thrown = false;
+		}
 	}// render
 
 	dribble(direction, power){

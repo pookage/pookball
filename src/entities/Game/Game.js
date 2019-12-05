@@ -104,6 +104,13 @@ export default class Game {
 		return this.#CANVAS;
 	}// getCanvas
 
+	getSize(){
+		return {
+			width: this.#WIDTH,
+			height: this.#HEIGHT
+		};
+	}// getSize
+
 	attachKeyboardControls(){
 
 		const parseKeyUp = ({ code }) => {
