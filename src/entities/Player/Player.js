@@ -218,10 +218,8 @@ export default class Player {
 
 		// COLLISION EFFECTS
 		// ------------------------
-		const ballCollision = getCollisionVector(this, this.#GAME.BALL);
-		if(ballCollision){
-			this.dribble();
-		}
+		const collisionVector = getCollisionVector(this, this.#GAME.BALL);
+		if(collisionVector) this.dribble(collisionVector);
 	}// render
 
 	rotate(context, radians){
@@ -290,10 +288,9 @@ export default class Player {
 	}// distance
 
 
-	dribble(){
+	dribble(direction){
 		const scalar = Math.max(1 - (this.speed / this.#SPEED__RUN), 0.6);
 		const power  = (this.#POWER__DRIBBLE * this.speed) * scalar;
-		const direction = this.direction; // TODO: transform direction vector with rotation
 
 		this.#GAME.BALL.dribble(direction, power);
 	}// dribble
@@ -308,7 +305,7 @@ export default class Player {
 			const yOffset      = Y - ballY;
 			const distance     = Math.hypot(xOffset, yOffset)
 
-			const ballNear = distance < this.#SPEED__WALK; // TODO - only allow this if ball is at feet
+			const ballNear = distance < this.#SPEED__WALK;
 			if(ballNear){
 				const power     = this.#POWER__KICKING * this.#power;
 				this.#GAME.BALL.kick(direction, power);
