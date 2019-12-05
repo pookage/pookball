@@ -62,6 +62,7 @@ export default class Game {
 		this.resume = this.resume.bind(this);
 		this.centerOnActive = this.centerOnActive.bind(this);
 		this.attachKeyboardControls = this.attachKeyboardControls.bind(this);
+		this.scoreGoal = this.scoreGoal.bind(this);
 
 
 		// setup
@@ -154,6 +155,13 @@ export default class Game {
 		this.requestRender();
 	}// resume
 
+
+	// RULES LOGIC
+	// ---------------------------
+	scoreGoal(){
+		console.log("gooooallll");
+
+	}// scoreGoal
 
 	/* INIT ENTITIES
 	------------------------------

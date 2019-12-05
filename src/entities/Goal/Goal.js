@@ -49,8 +49,8 @@ export default class Goal {
 		const collisionVector = getCollisionVector(this, BALL);
 		// console.log({ collisionVector})
 		if(collisionVector){
-			console.log("goal!");
-			// this.#GAME.pause()
+			// console.log("goal!");
+			this.#GAME.scoreGoal();
 		}
 	}// render
 }// Goal
