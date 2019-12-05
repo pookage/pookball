@@ -11,14 +11,15 @@ export default class Player {
 	#SPEED_THRESHOLD__WALK = 2;
 	#SPEED_THRESHOLD__JOG  = 7;
 
-	#SIZE = 1;
+	#SIZE = 1.5;
 	#ACCELERATION = 0.1;
 	#DECELLERATION = 0.075;
 	#SPEED__WALK = 2;
 	#SPEED__JOG  = 4;
 	#SPEED__RUN  = 8;
 	#POWER__DRIBBLE = 1;
-	#POWER__KICKING = 1;
+	#POWER__KICKING = 4;
+	#POWER__CHARGE_RATE = 1;
 
 	#GAME;	
 	#CURSOR_X;
@@ -29,6 +30,9 @@ export default class Player {
 
 	direction = { x: 0, y: 0 }; // current movement direction vector
 	speed     = 0;
+	
+	#power     = 0;
+	#charging  = false;
 
 
 	constructor(config){
@@ -51,6 +55,7 @@ export default class Player {
 		this.calculateSpeedFromDistance   = this.calculateSpeedFromDistance.bind(this);
 		this.attachMouseControls          = this.attachMouseControls.bind(this);
 		this.punt                         = this.punt.bind(this);
+		this.chargePunt                   = this.chargePunt.bind(this);
 		this.dribble                      = this.dribble.bind(this);
 
 		// setup
@@ -84,14 +89,14 @@ export default class Player {
 			...options,
 			size: this.RADIUS,
 			parent: this,
-			offset: 0.2,
+			offset: (this.RADIUS / 5) * 2,
 			threshold: this.#SPEED__WALK,
 		});
 		const run = new DirectionIndicator({
 			...options,
 			size: this.RADIUS,
 			parent: this,
-			offset: 0.4,
+			offset: (this.RADIUS / 5) * 4,
 			threshold: this.#SPEED__JOG
 		});
 
@@ -116,7 +121,8 @@ export default class Player {
 	}// initChildren
 
 	attachMouseControls(){
-		window.addEventListener("click", this.punt);
+		window.addEventListener("mousedown", this.chargePunt);
+		window.addEventListener("mouseup", this.punt);
 	}// attachMouseControls
 
 
@@ -189,6 +195,14 @@ export default class Player {
 			);
 			context.stroke();
 			context.strokeStyle = "black";
+		}
+
+
+		// EVENT EFFECTS
+		// ------------------------
+		if(this.#charging){
+			const power = this.#power + (this.#POWER__CHARGE_RATE * deltaTime);
+			this.#power = Math.min(power, 1);
 		}
 
 
@@ -265,27 +279,40 @@ export default class Player {
 		else if(far)   return this.#SPEED__RUN;
 	}// distance
 
-	dribble(){
-		const scalar = Math.max(1 - (this.speed / this.#SPEED__RUN), 0.8);
-		const power  = (this.#POWER__DRIBBLE * this.speed) * scalar;
 
-		this.#GAME.BALL.dribble(this.direction, power);
-	}
+	dribble(){
+		const scalar = Math.max(1 - (this.speed / this.#SPEED__RUN), 0.6);
+		const power  = (this.#POWER__DRIBBLE * this.speed) * scalar;
+		const direction = this.direction; // TODO: transform direction vector with rotation
+
+		this.#GAME.BALL.dribble(direction, power);
+	}// dribble
 
 	punt(){
+
+		console.log(this.#power);
+
 		if(this.ACTIVE){
+			this.#charging = false;
+
 			const { X: ballX, Y: ballY } = this.#GAME.BALL;
-			const xOffset      = this.X - ballX;
-			const yOffset      = this.Y - ballY;
+			const { X, Y, direction } = this;
+			const xOffset      = X - ballX;
+			const yOffset      = Y - ballY;
 			const distance     = Math.hypot(xOffset, yOffset)
 
 			const ballNear = distance < this.#SPEED__WALK; // TODO - only allow this if ball is at feet
 			if(ballNear){
-				const scalar = Math.max(1 - (this.speed / this.#SPEED__RUN), 0.4);
-				const power  = (this.#POWER__KICKING * this.speed) * scalar;
-				this.#GAME.BALL.kick(this.direction, power);
+				const power     = this.#POWER__KICKING * this.#power;
+				this.#GAME.BALL.kick(direction, power);
 			}
 		}
+
+		this.#power = 0;
 	}// punt
+
+	chargePunt(){
+		this.#charging = true;
+	}// chargePunt
 
 }// Player
