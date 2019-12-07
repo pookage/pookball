@@ -2,7 +2,7 @@ import Guide from "ENTITIES/Guide/";
 import Goal from "ENTITIES/Goal/";
 import Player from "ENTITIES/Player/";
 import Ball from "ENTITIES/Ball/";
-import { debounce, calculateScroll } from "SHARED/utils.js";
+import { debounce, calculateScroll, set } from "SHARED/utils.js";
 
 export default class Game {
 
@@ -25,6 +25,7 @@ export default class Game {
 
 	// CACHED VALUES
 	// ----------------------------
+	#TEAMS            = [ "Top Peeps", "Bottom Peeps" ]; 
 	DEGREES_360       = Math.PI * 2;
 	#throttle_timeout = null;       // reference to the setTimeout that is throttling the render
 	#next_frame       = null;       // refernece to the next requestAnimationFrame
@@ -40,6 +41,7 @@ export default class Game {
 	UNIT;            // the number of pixels per meter
 	#width;          // pixel width of canvas
 	#height;         // pixel height of canvas
+	#state;
 
 
 	constructor(config){
@@ -50,6 +52,7 @@ export default class Game {
 		// -------------------
 		this.createCanvas  = this.createCanvas.bind(this);
 		this.updateUnit    = this.updateUnit.bind(this);
+		this.update        = this.update.bind(this);
 		this.initEntities  = this.initEntities.bind(this);
 		this.render        = this.render.bind(this);
 		this.requestRender = this.requestRender.bind(this);
@@ -71,6 +74,15 @@ export default class Game {
 		this.#CANVAS   = this.createCanvas();
 		this.#CONTEXT  = this.#CANVAS.getContext("2d");
 		this.#ENTITIES = this.initEntities();
+		this.#state    = {
+			scores: new Proxy(
+				{
+					[this.#TEAMS[0]]: 0,
+					[this.#TEAMS[1]]: 0
+				},
+				{ set: set.bind(true, this.update) }
+			)
+		};
 
 
 		// begin
@@ -88,6 +100,17 @@ export default class Game {
 
 		return (innerHeight * 6) / this.#HEIGHT;
 	}// updateUnit
+
+	update(key, val, prev){
+
+		console.log("goal scored, new state: ", this.#state.scores);
+
+		switch(key){
+			default:
+				return;
+		}
+	}// update
+
 
 	createCanvas(){
 		const canvas  = document.createElement("canvas");
@@ -158,9 +181,8 @@ export default class Game {
 
 	// RULES LOGIC
 	// ---------------------------
-	scoreGoal(){
-		console.log("gooooallll");
-
+	scoreGoal(team){
+		this.#state.scores[team] = this.#state.scores[team] + 1;
 	}// scoreGoal
 
 	/* INIT ENTITIES
@@ -185,11 +207,21 @@ export default class Game {
 			length: this.#WIDTH
 		});
 
-		const goal = new Goal({
+		const topGoal = new Goal({
+			team: this.#TEAMS[0],
 			game: this,
 			position: { 
 				x: this.#WIDTH / 2,
 				y: 0,
+			}
+		});
+
+		const bottomGoal = new Goal({
+			team: this.#TEAMS[1],
+			game: this,
+			position: { 
+				x: this.#WIDTH / 2,
+				y: this.#HEIGHT - 2,
 			}
 		});
 
@@ -205,14 +237,15 @@ export default class Game {
 			game: this,
 			position: {
 				x: this.#WIDTH / 2,
-				y: 10
+				y: 8
 			}
 		});
 
 		return ([
 			centerYGuide,
 			centerXGuide,
-			goal,
+			topGoal,
+			bottomGoal,
 			player,
 			ball
 		]);

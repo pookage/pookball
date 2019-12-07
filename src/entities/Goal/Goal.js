@@ -7,11 +7,13 @@ export default class Goal {
 	#GAME;
 	WIDTH = 7.32;
 	HEIGHT = 2;
+	#TEAM;
 	#state;
 
 	constructor(config){
 		const { 
 			game,
+			team,
 			position: {
 				x = 0,
 				y = 0
@@ -26,6 +28,7 @@ export default class Goal {
 		this.X = x;
 		this.Y = y;
 		this.#GAME = game;
+		this.#TEAM = team;
 
 		this.#state = new Proxy(
 			{ scored: false },
@@ -61,7 +64,7 @@ export default class Goal {
 	update(key, val, prev){
 		switch(key){
 			case "scored":
-				this.#GAME.scoreGoal();
+				this.#GAME.scoreGoal(this.#TEAM);
 				break;
 		}
 	}// update
