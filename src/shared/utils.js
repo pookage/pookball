@@ -91,12 +91,12 @@ export function getCollisionVector(source, target, GAME){
 	const targetWidth  = targetWidthAbs  || targetRadius;
 
 	const horizontalIntersection = 
-		sourcePosX < (targetPosX + targetWidth) && 
-		targetPosX < (sourcePosX + sourceWidth);
+		(sourcePosX - sourceWidth) < (targetPosX + targetWidth) && 
+		(targetPosX - targetWidth) < (sourcePosX + sourceWidth);
 
 	const verticalIntersection = 
-		sourcePosY < (targetPosY + targetHeight) &&
-		targetPosY < (sourcePosY + sourceHeight);
+		(sourcePosY - sourceHeight) < (targetPosY + targetHeight) &&
+		(targetPosY - targetHeight) < (sourcePosY + sourceHeight);
 
 	const collision = horizontalIntersection && verticalIntersection;
 
