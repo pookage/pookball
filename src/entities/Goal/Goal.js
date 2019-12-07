@@ -1,4 +1,4 @@
-import { getCollisionVector } from "SHARED/utils.js";
+import { getCollisionVector, set } from "SHARED/utils.js";
 
 export default class Goal {
 
@@ -7,6 +7,7 @@ export default class Goal {
 	#GAME;
 	WIDTH = 7.32;
 	HEIGHT = 2;
+	#state;
 
 	constructor(config){
 		const { 
@@ -19,11 +20,17 @@ export default class Goal {
 
 		// scope binding
 		this.render = this.render.bind(this);
+		this.update = this.update.bind(this);
 
 		// setup
 		this.X = x;
 		this.Y = y;
 		this.#GAME = game;
+
+		this.#state = new Proxy(
+			{ scored: false },
+			{ set: set.bind(true, this.update) }
+		);
 
 	}// constructor
 
@@ -47,10 +54,16 @@ export default class Goal {
 		// COLLISION DETECTION
 		// -------------------------
 		const collisionVector = getCollisionVector(this, BALL);
-		// console.log({ collisionVector})
-		if(collisionVector){
-			// console.log("goal!");
-			this.#GAME.scoreGoal();
-		}
+		if(collisionVector) this.#state.scored = true;
 	}// render
+
+
+	update(key, val, prev){
+		switch(key){
+			case "scored":
+				this.#GAME.scoreGoal();
+				break;
+		}
+	}// update
+
 }// Goal

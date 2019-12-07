@@ -118,3 +118,13 @@ export function checkOob(target, bounds){
 
 	return outOfBounds;
 }//checkOob
+
+export function set(callback, state, key, value){
+	const prevVal = state[key];
+
+	if(prevVal !== value){
+		state[key]    = value;
+		callback(key, value, prevVal);
+	}
+	return true;
+} // set
