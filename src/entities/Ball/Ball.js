@@ -17,8 +17,7 @@ export default class Ball {
 	#GAME;
 	#MULTIPLIER__SHORT = 2;
 	#MULTIPLIER__LONG  = 5;
-
-
+	#MULTIPLIER__TURN  = 1;
 
 
 	constructor(config){
@@ -109,6 +108,14 @@ export default class Ball {
 		this.direction = { x, y };
 		this.#energy   = this.#MULTIPLIER__LONG * power;
 	}// kick
+
+	turn(direction){
+		const { x, y } = direction;
+
+		this.direction = { x, y };
+		this.#energy   = this.#energy + 0.01;
+	}// turn
+
 
 	reset(position){
 		const { x, y } = position;

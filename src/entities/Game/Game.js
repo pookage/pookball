@@ -104,9 +104,8 @@ export default class Game {
 
 	update(key, val, prev){
 
-		console.log(key, "goal scored, new state: ", this.#state.scores);
-
 		switch(key){
+			// goal scored
 			case this.#TEAMS[0]:
 			case this.#TEAMS[1]:
 				this.resetBall();
@@ -188,12 +187,10 @@ export default class Game {
 	// RULES LOGIC
 	// ---------------------------
 	scoreGoal(team){
-		console.log("score goal!")
 		this.#state.scores[team] = this.#state.scores[team] + 1;
 	}// scoreGoal
 
 	resetBall(){
-		console.log("reset teh ball!")
 		this.BALL.reset({
 			x: this.#WIDTH / 2,
 			y: this.#HEIGHT / 2
@@ -228,7 +225,7 @@ export default class Game {
 			game: this,
 			position: { 
 				x: this.#WIDTH / 2,
-				y: 0,
+				y: 1,
 			}
 		});
 
@@ -237,7 +234,7 @@ export default class Game {
 			game: this,
 			position: { 
 				x: this.#WIDTH / 2,
-				y: this.#HEIGHT - 2,
+				y: this.#HEIGHT - 1,
 			}
 		});
 
@@ -245,7 +242,7 @@ export default class Game {
 			game: this,
 			position: {
 				x: this.#WIDTH / 2,
-				y: 9
+				y: this.#HEIGHT / 2 - 3 
 			}
 		});
 

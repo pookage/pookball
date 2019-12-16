@@ -43,10 +43,10 @@ export default class Goal {
 
 		const width  = this.WIDTH * UNIT;
 		const height = this.HEIGHT * UNIT;
-		const radius = width / 2;
+		
 
-		const xStart = (this.X * UNIT) - radius;
-		const yStart = (this.Y * UNIT);
+		const xStart = (this.X * UNIT) - (width / 2);
+		const yStart = (this.Y * UNIT) - (height / 2);
 
 		context.fillStyle = "green";
 		context.fillRect(

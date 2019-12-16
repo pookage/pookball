@@ -27,6 +27,7 @@ export default class Player {
 	#CURSOR_Y;
 	#CHILDREN;
 	#INDICATOR__POWER;
+	#INDICATOR__CLOSE;
 
 	ACTIVE = true;
 
@@ -102,7 +103,7 @@ export default class Player {
 			threshold: this.#SPEED__JOG
 		});
 
-		const close = new ProximityIndicator({
+		const close = this.#INDICATOR__CLOSE = new ProximityIndicator({
 			...options,
 			radius: this.#SPEED_THRESHOLD__WALK
 		});
@@ -181,6 +182,7 @@ export default class Player {
 		context.fillStyle = "black";
 
 		this.rotate(context, rotation);
+
 		context.beginPath();
 		context.moveTo(x, y);
 		context.arc(
@@ -219,7 +221,10 @@ export default class Player {
 		// COLLISION EFFECTS
 		// ------------------------
 		const collisionVector = getCollisionVector(this, this.#GAME.BALL);
-		if(collisionVector) this.dribble(collisionVector);
+		const inControlRange  = getCollisionVector(this.#INDICATOR__CLOSE, this.#GAME.BALL);
+
+		if(collisionVector)     this.dribble(collisionVector);
+		else if(inControlRange) this.turn(direction);
 	}// render
 
 	rotate(context, radians){
@@ -294,6 +299,11 @@ export default class Player {
 
 		this.#GAME.BALL.dribble(direction, power);
 	}// dribble
+
+	turn(direction){
+
+		this.#GAME.BALL.turn(direction);
+	}// turn
 
 	punt(){
 		if(this.ACTIVE){
