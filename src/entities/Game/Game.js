@@ -188,6 +188,7 @@ export default class Game {
 	// RULES LOGIC
 	// ---------------------------
 	scoreGoal(team){
+		console.log("score goal!")
 		this.#state.scores[team] = this.#state.scores[team] + 1;
 	}// scoreGoal
 

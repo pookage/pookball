@@ -64,9 +64,14 @@ export default class Goal {
 	update(key, val, prev){
 		switch(key){
 			case "scored":
-				this.#GAME.scoreGoal(this.#TEAM);
+				if(val){
+					this.#GAME.scoreGoal(this.#TEAM);
+					this.#state.scored = false;
+				}
 				break;
 		}
 	}// update
+
+
 
 }// Goal
