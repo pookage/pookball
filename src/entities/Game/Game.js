@@ -66,6 +66,7 @@ export default class Game {
 		this.centerOnActive = this.centerOnActive.bind(this);
 		this.attachKeyboardControls = this.attachKeyboardControls.bind(this);
 		this.scoreGoal = this.scoreGoal.bind(this);
+		this.resetBall = this.resetBall.bind(this);
 
 
 		// setup
@@ -103,9 +104,13 @@ export default class Game {
 
 	update(key, val, prev){
 
-		console.log("goal scored, new state: ", this.#state.scores);
+		console.log(key, "goal scored, new state: ", this.#state.scores);
 
 		switch(key){
+			case this.#TEAMS[0]:
+			case this.#TEAMS[1]:
+				this.resetBall();
+				break;
 			default:
 				return;
 		}
@@ -168,6 +173,7 @@ export default class Game {
 		window.scrollTo(x, y);
 	}// centerOnActive
 
+
 	pause(){
 		cancelAnimationFrame(this.#next_frame);
 		clearTimeout(this.#throttle_timeout);
@@ -184,6 +190,15 @@ export default class Game {
 	scoreGoal(team){
 		this.#state.scores[team] = this.#state.scores[team] + 1;
 	}// scoreGoal
+
+	resetBall(){
+		console.log("reset teh ball!")
+		this.BALL.reset({
+			x: this.#WIDTH / 2,
+			y: this.#HEIGHT / 2
+		})
+	}// resetBall
+
 
 	/* INIT ENTITIES
 	------------------------------
@@ -237,7 +252,7 @@ export default class Game {
 			game: this,
 			position: {
 				x: this.#WIDTH / 2,
-				y: 8
+				y: this.#HEIGHT / 2
 			}
 		});
 

@@ -2,9 +2,13 @@ import { easeInOut, checkOob } from "SHARED/utils.js";
 
 export default class Ball {
 
+	// defaults
+	#SIZE = 0.5;
+	#STILL = { x: 0, y: 0 };
+
 	X;
 	Y;
-	direction = { x: 0, y: 0 }; // current direction vector of travel
+	direction = { ...this.#STILL }; // current direction vector of travel
 	#energy = 0;    // amount of distance the ball has left to travel
 	#recently_thrown = false;
 
@@ -14,8 +18,7 @@ export default class Ball {
 	#MULTIPLIER__SHORT = 2;
 	#MULTIPLIER__LONG  = 5;
 
-	// defaults
-	#SIZE = 0.5;
+
 
 
 	constructor(config){
@@ -106,5 +109,14 @@ export default class Ball {
 		this.direction = { x, y };
 		this.#energy   = this.#MULTIPLIER__LONG * power;
 	}// kick
+
+	reset(position){
+		const { x, y } = position;
+
+		this.X         = x;
+		this.Y         = y;
+		this.energy    = 0;
+		this.direction = this.#STILL;
+	}// reset
 
 }// Ball
